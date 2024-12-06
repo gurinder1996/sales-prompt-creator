@@ -79,8 +79,8 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
-        <div className="space-y-4 rounded-lg border p-4 pb-6">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white p-6 rounded-lg">
+        <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-sm font-medium">OpenAI Configuration</h3>
@@ -94,7 +94,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
               render={({ field }) => (
                 <FormItem className="flex-shrink-0">
                   <FormControl>
-                    <Input disabled {...field} className="w-32 text-xs" />
+                    <Input disabled className="w-32 text-xs bg-muted/50" {...field} />
                   </FormControl>
                 </FormItem>
               )}
@@ -106,7 +106,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
             render={({ field }) => (
               <FormItem>
                 <FormControl>
-                  <Input type="password" placeholder="sk-..." {...field} />
+                  <Input type="password" placeholder="sk-..." className="bg-muted/50" {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -123,7 +123,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>AI Representative Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sarah" {...field} />
+                    <Input placeholder="e.g., Sarah" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -136,7 +136,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., TechCorp Solutions" {...field} />
+                    <Input placeholder="e.g., TechCorp Solutions" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -152,7 +152,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Industry</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., SaaS, Healthcare" {...field} />
+                    <Input placeholder="e.g., SaaS, Healthcare" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -167,6 +167,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormControl>
                     <Input 
                       placeholder="e.g., Small business owners"
+                      className="bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -188,7 +189,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="Describe your product or service and its key features..."
-                      className="h-20"
+                      className="h-20 bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -205,7 +206,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="What specific problems does your product solve?"
-                      className="h-20"
+                      className="h-20 bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -225,6 +226,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormControl>
                     <Input 
                       placeholder="e.g., Schedule a demo, Book a consultation"
+                      className="bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -241,7 +243,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormControl>
                     <Textarea 
                       placeholder="List the most common objections and how to handle them..."
-                      className="h-20"
+                      className="h-20 bg-muted/50"
                       {...field}
                     />
                   </FormControl>
@@ -260,7 +262,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormControl>
                   <Textarea 
                     placeholder="Any other details that might be helpful..."
-                    className="h-20"
+                    className="h-20 bg-muted/50"
                     {...field}
                   />
                 </FormControl>
