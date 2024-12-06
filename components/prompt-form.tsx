@@ -79,7 +79,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white p-6 rounded-lg">
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white rounded-lg border p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
