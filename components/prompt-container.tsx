@@ -1,14 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { PromptForm } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
 import { GeneratedPrompt } from "@/components/generated-prompt"
 
+const STORAGE_KEY = "sales-prompt-result"
+
 export function PromptContainer() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
+
+  // Load saved result from localStorage
+  useEffect(() => {
+    const savedResult = localStorage.getItem(STORAGE_KEY)
+    if (savedResult) {
+      setResult(savedResult)
+    }
+  }, [])
+
+  // Save result to localStorage when it changes
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem(STORAGE_KEY, result)
+    }
+  }, [result])
 
   const handleSubmit = async (values: any) => {
     setIsLoading(true)
