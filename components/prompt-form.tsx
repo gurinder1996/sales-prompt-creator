@@ -4,12 +4,10 @@ import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
-
 import { Button } from "@/components/ui/button"
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -17,7 +15,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Separator } from "@/components/ui/separator"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
@@ -76,54 +74,48 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   }
 
   if (!mounted) {
-    return null 
+    return null
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <Card>
-          <CardHeader>
-            <CardTitle>OpenAI Configuration</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <FormField
-              control={form.control}
-              name="apiKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>OpenAI API Key</FormLabel>
-                  <FormControl>
-                    <Input type="password" placeholder="sk-..." {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Your API key will be saved in your browser
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8">
+        <div className="space-y-4 rounded-lg border p-4 pb-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-sm font-medium">OpenAI Configuration</h3>
+              <p className="text-sm text-muted-foreground">
+                Your API key will be saved locally
+              </p>
+            </div>
             <FormField
               control={form.control}
               name="model"
               render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Model</FormLabel>
+                <FormItem className="flex-shrink-0">
                   <FormControl>
-                    <Input disabled {...field} />
+                    <Input disabled {...field} className="w-32 text-xs" />
                   </FormControl>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
+          <FormField
+            control={form.control}
+            name="apiKey"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input type="password" placeholder="sk-..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Basic Information</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+        <div className="grid gap-6">
+          <div className="grid grid-cols-2 gap-2">
             <FormField
               control={form.control}
               name="aiName"
@@ -150,22 +142,17 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Business Context</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <div className="grid grid-cols-2 gap-2">
             <FormField
               control={form.control}
               name="industry"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Industry/Company Type</FormLabel>
+                  <FormLabel>Industry</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., SaaS, Healthcare, Retail" {...field} />
+                    <Input placeholder="e.g., SaaS, Healthcare" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -178,8 +165,8 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Target Audience</FormLabel>
                   <FormControl>
-                    <Textarea 
-                      placeholder="e.g., Small business owners in the retail sector"
+                    <Input 
+                      placeholder="e.g., Small business owners"
                       {...field}
                     />
                   </FormControl>
@@ -187,23 +174,21 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Product & Challenges</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <Separator className="my-4" />
+
+          <div className="grid gap-4">
             <FormField
               control={form.control}
               name="product"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Product/Service Offered</FormLabel>
+                  <FormLabel>Product/Service Description</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="Describe your product or service"
+                      placeholder="Describe your product or service and its key features..."
+                      className="h-20"
                       {...field}
                     />
                   </FormControl>
@@ -216,10 +201,11 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
               name="challenges"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Specific Challenges/Goals</FormLabel>
+                  <FormLabel>Challenges Solved</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="What problems does your product solve?"
+                      placeholder="What specific problems does your product solve?"
+                      className="h-20"
                       {...field}
                     />
                   </FormControl>
@@ -227,14 +213,9 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Sales Approach</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
+          <div className="grid gap-4">
             <FormField
               control={form.control}
               name="objective"
@@ -242,7 +223,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Call Objective</FormLabel>
                   <FormControl>
-                    <Textarea 
+                    <Input 
                       placeholder="e.g., Schedule a demo, Book a consultation"
                       {...field}
                     />
@@ -259,7 +240,8 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormLabel>Common Objections</FormLabel>
                   <FormControl>
                     <Textarea 
-                      placeholder="List common objections and how to handle them"
+                      placeholder="List the most common objections and how to handle them..."
+                      className="h-20"
                       {...field}
                     />
                   </FormControl>
@@ -267,34 +249,33 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Additional Information</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <FormField
-              control={form.control}
-              name="additionalInfo"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Any Other Details</FormLabel>
-                  <FormControl>
-                    <Textarea 
-                      placeholder="Any additional context or requirements (optional)"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-        </Card>
+          <FormField
+            control={form.control}
+            name="additionalInfo"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Additional Context (Optional)</FormLabel>
+                <FormControl>
+                  <Textarea 
+                    placeholder="Any other details that might be helpful..."
+                    className="h-20"
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button 
+          type="submit" 
+          className="w-full"
+          disabled={isLoading}
+          size="lg"
+        >
           {isLoading ? "Generating..." : "Generate Prompt"}
         </Button>
       </form>
