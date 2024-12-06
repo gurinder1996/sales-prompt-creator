@@ -193,7 +193,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>AI Representative Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., Sarah" className="bg-muted/50" {...field} />
+                    <Input placeholder="e.g. Sarah" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -206,7 +206,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Company Name</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., TechCorp Solutions" className="bg-muted/50" {...field} />
+                    <Input placeholder="e.g. TechCorp Solutions" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -222,7 +222,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 <FormItem>
                   <FormLabel>Industry</FormLabel>
                   <FormControl>
-                    <Input placeholder="e.g., SaaS, Healthcare" className="bg-muted/50" {...field} />
+                    <Input placeholder="e.g. SaaS, Healthcare" className="bg-muted/50" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -236,7 +236,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormLabel>Target Audience</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="e.g., Small business owners"
+                      placeholder="e.g. Small business owners"
                       className="bg-muted/50"
                       {...field}
                     />
@@ -295,7 +295,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   <FormLabel>Call Objective</FormLabel>
                   <FormControl>
                     <Input 
-                      placeholder="e.g., Schedule a demo, Book a consultation"
+                      placeholder="e.g. Schedule a demo, Book a consultation"
                       className="bg-muted/50"
                       {...field}
                     />
