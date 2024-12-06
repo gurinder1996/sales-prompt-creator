@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -20,7 +21,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
-  model: z.string().default("gpt-4"),
+  model: z.string().default("gpt-4o-mini"),
   aiName: z.string().min(1, "AI name is required"),
   companyName: z.string().min(1, "Company name is required"),
   industry: z.string().min(1, "Industry is required"),
@@ -32,7 +33,7 @@ const formSchema = z.object({
   additionalInfo: z.string().optional(),
 })
 
-type FormValues = z.infer<typeof formSchema>
+export type FormValues = z.infer<typeof formSchema>
 
 interface PromptFormProps {
   onSubmit: (values: FormValues) => void
@@ -40,11 +41,13 @@ interface PromptFormProps {
 }
 
 export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
+  const [mounted, setMounted] = useState(false)
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       model: "gpt-4o-mini",
-      apiKey: localStorage.getItem("openai-api-key") || "",
+      apiKey: "",
       aiName: "",
       companyName: "",
       industry: "",
@@ -57,9 +60,23 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
     },
   })
 
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem("openai-api-key")
+    if (savedApiKey) {
+      form.setValue("apiKey", savedApiKey)
+    }
+    setMounted(true)
+  }, [form])
+
   const handleSubmit = (values: FormValues) => {
-    localStorage.setItem("openai-api-key", values.apiKey)
+    if (mounted) {
+      localStorage.setItem("openai-api-key", values.apiKey)
+    }
     onSubmit(values)
+  }
+
+  if (!mounted) {
+    return null 
   }
 
   return (

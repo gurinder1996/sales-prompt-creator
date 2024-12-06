@@ -4,29 +4,42 @@
 import { useState } from "react"
 import { PromptForm } from "@/components/prompt-form"
 import { useToast } from "@/hooks/use-toast"
+import { generateSalesPrompt } from "@/lib/openai"
+import { Card, CardContent } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
 
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false)
-  const [result] = useState<string>("")
+  const [result, setResult] = useState<string>("")
   const { toast } = useToast()
 
   const handleSubmit = async (values: any) => {
     setIsLoading(true)
     try {
-      // TODO: Implement OpenAI call
-      console.log(values)
+      const generatedPrompt = await generateSalesPrompt(values)
+      setResult(generatedPrompt)
       toast({
-        title: "Form submitted",
-        description: "Check the console for the form values",
+        title: "Success!",
+        description: "Your sales prompt has been generated.",
       })
-    } catch {
+    } catch (error) {
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Something went wrong. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to generate prompt",
       })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const handleCopy = () => {
+    if (result) {
+      navigator.clipboard.writeText(result)
+      toast({
+        title: "Copied!",
+        description: "Prompt copied to clipboard",
+      })
     }
   }
 
@@ -45,10 +58,24 @@ export default function Home() {
         </div>
         
         <div className="space-y-6">
-          {/* Result will go here */}
-          <div className="h-[600px] border rounded-lg p-4">
-            {result || "Generated prompt will appear here"}
-          </div>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-xl font-semibold">Generated Prompt</h2>
+                {result && (
+                  <Button
+                    variant="outline"
+                    onClick={handleCopy}
+                  >
+                    Copy to Clipboard
+                  </Button>
+                )}
+              </div>
+              <div className="h-[600px] overflow-y-auto whitespace-pre-wrap font-mono text-sm border rounded-lg p-4 bg-muted">
+                {result || "Generated prompt will appear here"}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </main>
