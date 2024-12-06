@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
+import { useToast } from "@/hooks/use-toast"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
@@ -38,8 +39,11 @@ interface PromptFormProps {
   isLoading?: boolean
 }
 
+const STORAGE_KEY = "sales-prompt-form"
+
 export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
+  const { toast } = useToast()
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -58,13 +62,46 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
     },
   })
 
+  // Load saved form data from localStorage
   useEffect(() => {
     const savedApiKey = localStorage.getItem("openai-api-key")
+    const savedFormData = localStorage.getItem(STORAGE_KEY)
+    
+    if (savedFormData) {
+      const parsedData = JSON.parse(savedFormData)
+      Object.entries(parsedData).forEach(([key, value]) => {
+        if (key !== "apiKey") {
+          form.setValue(key as keyof FormValues, value as string)
+        }
+      })
+    }
+    
     if (savedApiKey) {
       form.setValue("apiKey", savedApiKey)
     }
+    
     setMounted(true)
   }, [form])
+
+  // Save form data to localStorage when it changes
+  useEffect(() => {
+    if (mounted) {
+      const formData = form.getValues()
+      const dataToSave = {
+        model: formData.model,
+        aiName: formData.aiName,
+        companyName: formData.companyName,
+        industry: formData.industry,
+        targetAudience: formData.targetAudience,
+        challenges: formData.challenges,
+        product: formData.product,
+        objective: formData.objective,
+        objections: formData.objections,
+        additionalInfo: formData.additionalInfo,
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+    }
+  }, [form.watch(), mounted])
 
   const handleSubmit = (values: FormValues) => {
     if (mounted) {
@@ -73,12 +110,45 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
     onSubmit(values)
   }
 
+  const resetForm = () => {
+    const apiKey = form.getValues("apiKey")
+    form.reset({
+      model: "gpt-4o-mini",
+      apiKey,
+      aiName: "",
+      companyName: "",
+      industry: "",
+      targetAudience: "",
+      challenges: "",
+      product: "",
+      objective: "",
+      objections: "",
+      additionalInfo: "",
+    })
+    localStorage.removeItem(STORAGE_KEY)
+    toast({
+      title: "Form Reset",
+      description: "All fields have been cleared except the API key",
+    })
+  }
+
   if (!mounted) {
     return null
   }
 
   return (
     <Form {...form}>
+      <div className="flex justify-end mb-4">
+        <Button
+          type="button"
+          variant="outline"
+          onClick={resetForm}
+          className="text-xs"
+          size="sm"
+        >
+          Reset Form
+        </Button>
+      </div>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white rounded-lg border p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">
