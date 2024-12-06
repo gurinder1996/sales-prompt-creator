@@ -138,53 +138,53 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
 
   return (
     <Form {...form}>
-      <div className="flex justify-end mb-4">
-        <Button
-          type="button"
-          variant="outline"
-          onClick={resetForm}
-          className="text-xs"
-          size="sm"
-        >
-          Reset Form
-        </Button>
-      </div>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white rounded-lg border p-6">
         <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-sm font-medium">OpenAI Configuration</h3>
-              <p className="text-sm text-muted-foreground">
-                Your API key will be saved locally
-              </p>
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h3 className="text-sm font-medium">OpenAI Configuration</h3>
+                <p className="text-sm text-muted-foreground">
+                  Your API key will be saved locally
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={resetForm}
+                  className="text-xs"
+                  size="sm"
+                >
+                  Reset Form
+                </Button>
+                <FormField
+                  control={form.control}
+                  name="model"
+                  render={({ field }) => (
+                    <FormItem className="flex-shrink-0">
+                      <FormControl>
+                        <Input disabled className="w-32 text-xs bg-muted/50" {...field} />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
             <FormField
               control={form.control}
-              name="model"
+              name="apiKey"
               render={({ field }) => (
-                <FormItem className="flex-shrink-0">
+                <FormItem>
                   <FormControl>
-                    <Input disabled className="w-32 text-xs bg-muted/50" {...field} />
+                    <Input type="password" placeholder="sk-..." className="bg-muted/50" {...field} />
                   </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="apiKey"
-            render={({ field }) => (
-              <FormItem>
-                <FormControl>
-                  <Input type="password" placeholder="sk-..." className="bg-muted/50" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-        </div>
 
-        <div className="grid gap-6">
           <div className="grid grid-cols-2 gap-2">
             <FormField
               control={form.control}
