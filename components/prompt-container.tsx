@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { PromptForm } from "@/components/prompt-form"
 import { type FormValues } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
@@ -13,6 +13,8 @@ export function PromptContainer() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
   const [currentFormData, setCurrentFormData] = useState<FormValues | null>(null)
+  const formRef = useRef<HTMLDivElement>(null)
+  const [formHeight, setFormHeight] = useState<number>(0)
 
   // Load saved result from localStorage
   useEffect(() => {
@@ -30,6 +32,18 @@ export function PromptContainer() {
       localStorage.removeItem(STORAGE_KEY)
     }
   }, [result])
+
+  useEffect(() => {
+    const updateHeight = () => {
+      if (formRef.current) {
+        setFormHeight(formRef.current.offsetHeight)
+      }
+    }
+    
+    updateHeight()
+    window.addEventListener('resize', updateHeight)
+    return () => window.removeEventListener('resize', updateHeight)
+  }, [])
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true)
@@ -57,15 +71,15 @@ export function PromptContainer() {
   }
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2">
-      <div>
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div ref={formRef}>
         <PromptForm 
           onSubmit={handleSubmit} 
           isLoading={isLoading} 
           restoredFormData={currentFormData}
         />
       </div>
-      <div className="mt-6 lg:mt-0 lg:pl-4">
+      <div className="mt-0 lg:mt-0 lg:pl-0 flex flex-col" style={{ height: formHeight ? `${formHeight}px` : 'auto' }}>
         <GeneratedPrompt 
           prompt={result} 
           isLoading={isLoading}

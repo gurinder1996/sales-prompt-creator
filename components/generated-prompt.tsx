@@ -77,8 +77,8 @@ export function GeneratedPrompt({
   }
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <div className="flex items-center justify-between mb-1">
+    <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full h-full flex flex-col">
+      <div className="flex items-center justify-between mb-1 flex-none">
         <TabsList>
           <TabsTrigger value="current">Current</TabsTrigger>
           <TabsTrigger value="history" className="relative">
@@ -92,20 +92,22 @@ export function GeneratedPrompt({
         </TabsList>
       </div>
 
-      <TabsContent value="current" className="mt-0">
-        <div className="relative mt-1">
+      <TabsContent value="current" className="mt-0 flex-1 min-h-0">
+        <div className="relative h-full flex flex-col">
           {isLoading ? (
-            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
+            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert h-full">
               <div className="flex items-center justify-center">
                 <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
               </div>
             </div>
           ) : prompt ? (
-            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
-              <ReactMarkdown>{prompt}</ReactMarkdown>
+            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert flex flex-col h-full">
+              <div className="overflow-auto flex-1">
+                <ReactMarkdown>{prompt}</ReactMarkdown>
+              </div>
             </div>
           ) : (
-            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
+            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground h-full">
               Your generated prompt will appear here.
             </div>
           )}
@@ -122,13 +124,17 @@ export function GeneratedPrompt({
         </div>
       </TabsContent>
 
-      <TabsContent value="history" className="mt-0">
+      <TabsContent value="history" className="mt-0 flex-1 min-h-0">
         {history.length > 0 ? (
-          <PromptHistory 
-            history={history} 
-            onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
-            onRestore={handleRestoreItem}
-          />
+          <div className="h-full rounded-md border bg-white/50 p-4">
+            <div className="overflow-auto h-full">
+              <PromptHistory 
+                history={history} 
+                onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
+                onRestore={handleRestoreItem}
+              />
+            </div>
+          </div>
         ) : (
           <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
             No history yet. Generated prompts will appear here.
