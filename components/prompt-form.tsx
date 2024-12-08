@@ -33,7 +33,7 @@ import { Lock, Unlock } from "lucide-react"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
-  vapiKey: z.string().min(1, "VAPI API key is required"),
+  vapiKey: z.string().optional(),
   model: z.string().min(1, "Model selection is required"),
   aiName: z.string().min(1, "AI name is required"),
   companyName: z.string().min(1, "Company name is required"),
