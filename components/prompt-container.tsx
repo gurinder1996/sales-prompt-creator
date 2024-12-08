@@ -107,6 +107,7 @@ export function PromptContainer() {
           onRestoreFormData={handleRestoreFormData}
           onRestorePrompt={handleRestorePrompt}
           onClearPrompt={handleClearPrompt}
+          containerHeight={formHeight}
         />
       </div>
     </div>

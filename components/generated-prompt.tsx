@@ -21,6 +21,7 @@ interface GeneratedPromptProps {
   onRestoreFormData: (formData: FormValues) => void
   onRestorePrompt: (prompt: string) => void
   onClearPrompt: () => void
+  containerHeight: number
 }
 
 const HISTORY_STORAGE_KEY = "prompt-history"
@@ -31,7 +32,8 @@ export function GeneratedPrompt({
   currentFormData,
   onRestoreFormData,
   onRestorePrompt,
-  onClearPrompt
+  onClearPrompt,
+  containerHeight
 }: GeneratedPromptProps) {
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
   const [activeTab, setActiveTab] = useState("current")
@@ -93,8 +95,8 @@ export function GeneratedPrompt({
       </div>
 
       <div className="flex-1 min-h-0 relative">
-        <TabsContent value="current" className="absolute inset-0 flex">
-          <div className="relative w-full">
+        <TabsContent value="current" className="absolute inset-0">
+          <div className="relative max-h-full">
             {isLoading ? (
               <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
                 <div className="flex items-center justify-center">
@@ -103,7 +105,7 @@ export function GeneratedPrompt({
               </div>
             ) : prompt ? (
               <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
-                <div className="max-h-full overflow-auto">
+                <div className="overflow-auto" style={{ maxHeight: containerHeight ? `${containerHeight - 84}px` : 'auto' }}>
                   <ReactMarkdown>{prompt}</ReactMarkdown>
                 </div>
               </div>
