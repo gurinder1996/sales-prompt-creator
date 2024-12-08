@@ -44,7 +44,7 @@ export function PromptContainer() {
       <div>
         <PromptForm onSubmit={handleSubmit} isLoading={isLoading} />
       </div>
-      <div className="lg:pl-8">
+      <div className="mt-6 lg:mt-0 lg:pl-8">
         <GeneratedPrompt prompt={result} isLoading={isLoading} />
       </div>
     </div>
