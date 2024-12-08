@@ -24,15 +24,6 @@ export function PromptContainer() {
     }
   }, [])
 
-  // Save result to localStorage when it changes
-  useEffect(() => {
-    if (result) {
-      localStorage.setItem(STORAGE_KEY, result)
-    } else {
-      localStorage.removeItem(STORAGE_KEY)
-    }
-  }, [result])
-
   useEffect(() => {
     const updateHeight = () => {
       if (formRef.current) {
@@ -40,10 +31,39 @@ export function PromptContainer() {
       }
     }
     
+    // Initial update
     updateHeight()
+    
+    // Update after a short delay to ensure form is fully rendered
+    const initialTimer = setTimeout(updateHeight, 100)
+    
+    // Update on window resize
     window.addEventListener('resize', updateHeight)
-    return () => window.removeEventListener('resize', updateHeight)
+    
+    // Create a mutation observer to watch for DOM changes
+    const observer = new MutationObserver(updateHeight)
+    if (formRef.current) {
+      observer.observe(formRef.current, { 
+        subtree: true, 
+        childList: true,
+        attributes: true 
+      })
+    }
+    
+    return () => {
+      window.removeEventListener('resize', updateHeight)
+      observer.disconnect()
+      clearTimeout(initialTimer)
+    }
   }, [])
+
+  useEffect(() => {
+    if (result) {
+      localStorage.setItem(STORAGE_KEY, result)
+    } else {
+      localStorage.removeItem(STORAGE_KEY)
+    }
+  }, [result])
 
   const handleSubmit = async (values: FormValues) => {
     setIsLoading(true)

@@ -92,51 +92,53 @@ export function GeneratedPrompt({
         </TabsList>
       </div>
 
-      <TabsContent value="current" className="mt-0 flex-1 min-h-0">
-        <div className="relative h-full flex flex-col">
-          {isLoading ? (
-            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert h-full">
-              <div className="flex items-center justify-center">
-                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
+      <div className="flex-1 min-h-0 relative">
+        <TabsContent value="current" className="absolute inset-0">
+          <div className="relative h-full flex flex-col">
+            {isLoading ? (
+              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert h-full">
+                <div className="flex items-center justify-center">
+                  <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
+                </div>
               </div>
-            </div>
-          ) : prompt ? (
-            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert flex flex-col h-full">
-              <div className="overflow-auto flex-1">
-                <ReactMarkdown>{prompt}</ReactMarkdown>
+            ) : prompt ? (
+              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert flex flex-col h-full">
+                <div className="overflow-auto flex-1">
+                  <ReactMarkdown>{prompt}</ReactMarkdown>
+                </div>
               </div>
-            </div>
-          ) : (
-            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground h-full">
-              Your generated prompt will appear here.
-            </div>
-          )}
-          {prompt && !isLoading && (
-            <div className="absolute right-2 -top-4 flex gap-1">
-              <CopyButton text={prompt} />
-              <DeleteButton 
-                onDelete={onClearPrompt}
-                deleteMessage="Clear prompt"
-                confirmationMessage="Click to confirm clearing"
-              />
-            </div>
-          )}
-        </div>
-      </TabsContent>
-
-      <TabsContent value="history" className="mt-0 flex-1 min-h-0 overflow-auto">
-        {history.length > 0 ? (
-          <PromptHistory 
-            history={history} 
-            onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
-            onRestore={handleRestoreItem}
-          />
-        ) : (
-          <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
-            No history yet. Generated prompts will appear here.
+            ) : (
+              <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground h-full">
+                Your generated prompt will appear here.
+              </div>
+            )}
+            {prompt && !isLoading && (
+              <div className="absolute right-2 -top-4 flex gap-1">
+                <CopyButton text={prompt} />
+                <DeleteButton 
+                  onDelete={onClearPrompt}
+                  deleteMessage="Clear prompt"
+                  confirmationMessage="Click to confirm clearing"
+                />
+              </div>
+            )}
           </div>
-        )}
-      </TabsContent>
+        </TabsContent>
+
+        <TabsContent value="history" className="absolute inset-0 overflow-auto">
+          {history.length > 0 ? (
+            <PromptHistory 
+              history={history} 
+              onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
+              onRestore={handleRestoreItem}
+            />
+          ) : (
+            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
+              No history yet. Generated prompts will appear here.
+            </div>
+          )}
+        </TabsContent>
+      </div>
     </Tabs>
   )
 }
