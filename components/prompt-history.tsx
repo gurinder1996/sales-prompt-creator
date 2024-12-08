@@ -8,10 +8,9 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { FormValues } from "./prompt-form"
 import { CopyButton, DeleteButton, RestoreButton, CallButton } from "./prompt-actions"
 import { Button } from "./ui/button"
-import { initialize, startCall, endCall } from "@/lib/vapi"
+import { FormValues } from "./prompt-form"
 
 interface PromptHistoryItem {
   id: string
@@ -23,7 +22,7 @@ interface PromptHistoryItem {
 interface PromptHistoryProps {
   history: PromptHistoryItem[]
   onDelete: (id: string) => void
-  onRestore: (formData: FormValues, prompt: string) => void
+  onRestore: (item: PromptHistoryItem) => void
   currentFormData: FormValues | null
 }
 
@@ -88,26 +87,29 @@ export function PromptHistory({ history, onDelete, onRestore, currentFormData }:
                 </CollapsibleTrigger>
                 <div className="flex gap-1">
                   <CallButton 
+                    buttonId={`history-${item.id}`}
                     onCall={async () => {
-                      if (!currentFormData?.vapiKey) {
+                      if (!currentFormData) {
+                        throw new Error('Please fill out the form first');
+                      }
+
+                      if (!currentFormData.vapiKey) {
                         throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
                       }
-                      
-                      // Always use the current form's API key
-                      await initialize(currentFormData.vapiKey);
-                      
-                      await startCall(item.content, {
-                        assistantName: item.formData.aiName || 'AI Assistant',
-                        companyName: item.formData.companyName || 'Company'
-                      });
-                    }}
-                    onHangup={async () => {
-                      await endCall();
+
+                      return {
+                        apiKey: currentFormData.vapiKey,
+                        systemPrompt: item.content,
+                        context: {
+                          assistantName: currentFormData.aiName || 'AI Assistant',
+                          companyName: currentFormData.companyName || 'Company'
+                        }
+                      };
                     }}
                   />
                   <CopyButton text={item.content} />
                   <RestoreButton 
-                    onRestore={() => onRestore(item.formData, item.content)} 
+                    onRestore={() => onRestore(item)} 
                   />
                   <DeleteButton 
                     onDelete={() => onDelete(item.id)}

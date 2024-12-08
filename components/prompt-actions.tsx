@@ -10,8 +10,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
+import { useCallState, type CallState } from "@/lib/call-state"
+import { cn } from "@/lib/utils"
 
-const baseButtonStyles = "h-8 w-8 p-0 rounded-full border shadow-sm transition-colors bg-white"
+const baseButtonStyles = "h-8 w-8 p-0 rounded-full border shadow-sm bg-white"
 
 interface ActionButtonProps {
   onClick: (e: React.MouseEvent) => void
@@ -152,36 +154,40 @@ export function RestoreButton({ onRestore }: RestoreButtonProps) {
 }
 
 interface CallButtonProps {
-  onCall?: () => Promise<void>
-  onHangup?: () => Promise<void>
+  buttonId: string
+  onCall?: () => Promise<{
+    apiKey: string,
+    systemPrompt: string,
+    context: { assistantName: string; companyName: string }
+  }>;
 }
 
-type CallState = 'idle' | 'connecting' | 'active' | 'error';
-
-export function CallButton({ onCall, onHangup }: CallButtonProps) {
-  const [callState, setCallState] = useState<CallState>('idle')
+export function CallButton({ buttonId, onCall }: CallButtonProps) {
   const [tooltipOpen, setTooltipOpen] = useState(false)
   const { toast } = useToast()
+
+  const callState = useCallState(state => state.state)
+  const activeButtonId = useCallState(state => state.activeButtonId)
+  const initiateCall = useCallState(state => state.initiateCall)
+  const endCall = useCallState(state => state.endCall)
+
+  const isThisButtonActive = activeButtonId === buttonId
+  const canInteract = callState === 'idle' || (callState === 'error' && isThisButtonActive) || (callState === 'active' && isThisButtonActive)
 
   const handleToggleCall = useCallback(async (e: React.MouseEvent) => {
     e.stopPropagation()
     setTooltipOpen(false)  // Hide tooltip during state change
     
     try {
-      if (callState === 'idle') {
-        setCallState('connecting')
-        await onCall?.()
-        setCallState('active')
-      } else if (callState === 'active') {
-        await onHangup?.()
-        setCallState('idle')
-      } else if (callState === 'error') {
-        setCallState('connecting')
-        await onCall?.()
-        setCallState('active')
+      if (callState === 'active' && isThisButtonActive) {
+        await endCall(buttonId)
+      } else if (canInteract && onCall) {
+        const { apiKey, systemPrompt, context } = await onCall()
+        await initiateCall(buttonId, apiKey, systemPrompt, context)
+      } else if (!canInteract) {
+        throw new Error('Another call is in progress')
       }
     } catch (error) {
-      setCallState('error')
       toast({
         title: "Call Error",
         description: error instanceof Error ? error.message : "Failed to manage call",
@@ -191,43 +197,50 @@ export function CallButton({ onCall, onHangup }: CallButtonProps) {
     
     // Show tooltip with new state after a brief delay
     setTimeout(() => setTooltipOpen(true), 100)
-  }, [callState, onCall, onHangup, toast])
+  }, [buttonId, callState, isThisButtonActive, canInteract, onCall, endCall, initiateCall, toast])
 
   const getButtonContent = () => {
-    switch (callState) {
-      case 'connecting':
-        return <Loader2 className="h-4 w-4 animate-spin" />
+    if (callState === 'connecting' && isThisButtonActive) {
+      return <Loader2 className="h-4 w-4 animate-spin" />
+    }
+
+    switch (callState as CallState) {
       case 'active':
-        return <PhoneOff className="h-4 w-4" />
+        return isThisButtonActive ? <PhoneOff className="h-4 w-4" /> : <Phone className="h-4 w-4" />
       case 'error':
-        return <Phone className="h-4 w-4 text-destructive" />
+        return isThisButtonActive ? <Phone className="h-4 w-4 text-destructive" /> : <Phone className="h-4 w-4" />
       default:
         return <Phone className="h-4 w-4" />
     }
   }
 
-  const getTooltipContent = () => {
-    switch (callState) {
-      case 'connecting':
-        return "Connecting call..."
+  const getButtonStyles = () => {
+    if (callState === 'connecting') {
+      return isThisButtonActive ? "border-primary/50" : ""
+    }
+
+    switch (callState as CallState) {
       case 'active':
-        return "End call"
+        return isThisButtonActive ? "border-primary/50" : ""
       case 'error':
-        return "Retry call"
+        return isThisButtonActive ? "border-destructive/50" : ""
       default:
-        return "Start call"
+        return "hover:border-primary/50"
     }
   }
 
-  const getButtonStyles = () => {
-    const baseStyles = "text-muted-foreground hover:text-primary hover:border-primary/50"
-    switch (callState) {
+  const getTooltipContent = () => {
+    if (callState === 'connecting') {
+      return isThisButtonActive ? "Cancel connecting..." : "Call in progress"
+    }
+
+    switch (callState as CallState) {
       case 'active':
-        return `${baseStyles} text-primary border-primary/50`
+        return isThisButtonActive ? "End call" : "Call in progress"
       case 'error':
-        return `${baseStyles} text-destructive hover:text-destructive hover:border-destructive/50`
+        return "Try calling again"
       default:
-        return baseStyles
+        return "Start call"
     }
   }
 
@@ -239,9 +252,10 @@ export function CallButton({ onCall, onHangup }: CallButtonProps) {
             variant="ghost"
             size="sm"
             onClick={handleToggleCall}
-            className={`${baseButtonStyles} ${getButtonStyles()}`}
+            className={cn(baseButtonStyles, getButtonStyles())}
             onMouseEnter={() => setTooltipOpen(true)}
             onMouseLeave={() => setTooltipOpen(false)}
+            disabled={callState !== 'idle' && !isThisButtonActive}
           >
             {getButtonContent()}
             <span className="sr-only">{getTooltipContent()}</span>
