@@ -31,6 +31,7 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
   const { toast } = useToast()
   const [currentPage, setCurrentPage] = useState(0)
   const [openItems, setOpenItems] = useState<Set<string>>(new Set())
+  const [deleteConfirmations, setDeleteConfirmations] = useState<Set<string>>(new Set())
 
   const totalPages = Math.ceil(history.length / ITEMS_PER_PAGE)
   const startIndex = currentPage * ITEMS_PER_PAGE
@@ -53,6 +54,31 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
       newOpenItems.add(id)
     }
     setOpenItems(newOpenItems)
+  }
+
+  const handleDelete = (id: string) => {
+    if (deleteConfirmations.has(id)) {
+      onDelete(id)
+      setDeleteConfirmations(prev => {
+        const next = new Set(prev)
+        next.delete(id)
+        return next
+      })
+    } else {
+      setDeleteConfirmations(prev => {
+        const next = new Set(prev)
+        next.add(id)
+        return next
+      })
+      // Auto-clear confirmation after 3 seconds
+      setTimeout(() => {
+        setDeleteConfirmations(prev => {
+          const next = new Set(prev)
+          next.delete(id)
+          return next
+        })
+      }, 3000)
+    }
   }
 
   const formatTimestamp = (timestamp: number) => {
@@ -127,12 +153,22 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
                     size="sm"
                     onClick={(e) => {
                       e.stopPropagation()
-                      onDelete(item.id)
+                      handleDelete(item.id)
                     }}
-                    className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                    className={`h-8 w-8 p-0 shrink-0 transition-colors ${
+                      deleteConfirmations.has(item.id) 
+                        ? "bg-destructive hover:bg-destructive/90" 
+                        : "text-muted-foreground hover:text-destructive"
+                    }`}
                   >
-                    <Trash2 className="h-4 w-4" />
-                    <span className="sr-only">Delete history item</span>
+                    <Trash2 className={`h-4 w-4 ${
+                      deleteConfirmations.has(item.id) ? "text-white" : ""
+                    }`} />
+                    <span className="sr-only">
+                      {deleteConfirmations.has(item.id) 
+                        ? "Click again to confirm deletion" 
+                        : "Delete history item"}
+                    </span>
                   </Button>
                 </div>
               </div>
