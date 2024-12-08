@@ -204,13 +204,21 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
             vapiKey: formData.vapiKey
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
-          // Also save API keys with the same debounce timing
+          
+          // Handle OpenAI API key
           if (formData.apiKey) {
             localStorage.setItem("openai-api-key", formData.apiKey)
+          } else {
+            localStorage.removeItem("openai-api-key")
           }
+          
+          // Handle VAPI API key
           if (formData.vapiKey) {
             localStorage.setItem("vapi-api-key", formData.vapiKey)
+          } else {
+            localStorage.removeItem("vapi-api-key")
           }
+          
           timeoutId = null;
         }, 300);
       };
