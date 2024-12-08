@@ -53,6 +53,8 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
         }
         return prev
       })
+      // Switch to current tab when new prompt is generated
+      setActiveTab("current")
     }
   }, [prompt, isLoading])
 
