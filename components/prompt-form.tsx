@@ -213,6 +213,10 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     if (restoredFormData && mounted) {
       form.reset(restoredFormData)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredFormData))
+      // Clear undo state when restoring from history
+      setCanUndo(false)
+      localStorage.setItem(UNDO_STATE_KEY, "false")
+      localStorage.removeItem(DELETED_DATA_KEY)
     }
   }, [restoredFormData, form, mounted])
 
