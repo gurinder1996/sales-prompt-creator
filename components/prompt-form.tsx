@@ -266,16 +266,8 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   </FormItem>
                 )}
               />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={resetForm}
-                className="whitespace-nowrap mb-[2px]"
-                size="sm"
-              >
-                Reset Form
-              </Button>
             </div>
+            <Separator className="my-4" />
           </div>
 
           <div className="grid grid-cols-2 gap-2">
@@ -435,14 +427,25 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
           />
         </div>
 
-        <Button 
-          type="submit" 
-          className="w-full"
-          disabled={isLoading}
-          size="lg"
-        >
-          {isLoading ? "Generating..." : "Generate Prompt"}
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            type="submit" 
+            className="flex-1"
+            disabled={isLoading}
+            size="lg"
+          >
+            {isLoading ? "Generating..." : "Generate Prompt"}
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={resetForm}
+            disabled={isLoading}
+            size="lg"
+          >
+            Reset
+          </Button>
+        </div>
       </form>
     </Form>
   )
