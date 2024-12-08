@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-require-imports */
 import type { Config } from "tailwindcss";
 
 export default {
@@ -11,12 +12,12 @@ export default {
     extend: {
       keyframes: {
         "collapsible-down": {
-          from: { height: 0 },
+          from: { height: "0" },
           to: { height: "var(--radix-collapsible-content-height)" },
         },
         "collapsible-up": {
           from: { height: "var(--radix-collapsible-content-height)" },
-          to: { height: 0 },
+          to: { height: "0" },
         },
       },
       animation: {
