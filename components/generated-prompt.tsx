@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
+import ReactMarkdown from "react-markdown"
 
 interface GeneratedPromptProps {
   prompt: string | null
@@ -16,7 +17,7 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
       navigator.clipboard.writeText(prompt)
       toast({
         title: "Copied!",
-        description: "Prompt copied to clipboard",
+        description: "Markdown prompt copied to clipboard",
       })
     }
   }
@@ -41,7 +42,9 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
             <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
           </div>
         ) : prompt ? (
-          <div className="whitespace-pre-wrap">{prompt}</div>
+          <div className="prose prose-sm max-w-none dark:prose-invert">
+            <ReactMarkdown>{prompt}</ReactMarkdown>
+          </div>
         ) : (
           <div className="text-center text-muted-foreground">
             Your generated prompt will appear here
