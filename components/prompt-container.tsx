@@ -65,7 +65,7 @@ export function PromptContainer() {
           restoredFormData={currentFormData}
         />
       </div>
-      <div className="mt-6 lg:mt-0 lg:pl-8">
+      <div className="mt-6 lg:mt-0 lg:pl-4">
         <GeneratedPrompt 
           prompt={result} 
           isLoading={isLoading}
