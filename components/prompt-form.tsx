@@ -24,9 +24,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
+import { Lock, Unlock } from "lucide-react"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
+  vapiKey: z.string().min(1, "VAPI API key is required"),
   model: z.string().min(1, "Model selection is required"),
   aiName: z.string().min(1, "AI name is required"),
   companyName: z.string().min(1, "Company name is required"),
@@ -59,6 +66,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
   ])
   const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [canUndo, setCanUndo] = useState(false)
+  const [isApiOpen, setIsApiOpen] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
@@ -66,6 +74,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     defaultValues: {
       model: "gpt-4o-mini",
       apiKey: "",
+      vapiKey: "",
       aiName: "",
       companyName: "",
       industry: "",
@@ -81,6 +90,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
   // Load saved form data from localStorage
   useEffect(() => {
     const savedApiKey = localStorage.getItem("openai-api-key")
+    const savedVapiKey = localStorage.getItem("vapi-api-key")
     const savedFormData = localStorage.getItem(STORAGE_KEY)
     const canUndoState = localStorage.getItem(UNDO_STATE_KEY) === "true"
     
@@ -89,7 +99,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     if (savedFormData) {
       const parsedData = JSON.parse(savedFormData)
       Object.entries(parsedData).forEach(([key, value]) => {
-        if (key !== "apiKey") {
+        if (key !== "apiKey" && key !== "vapiKey") {
           form.setValue(key as keyof FormValues, value as string)
         }
       })
@@ -97,6 +107,10 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     
     if (savedApiKey) {
       form.setValue("apiKey", savedApiKey)
+    }
+    
+    if (savedVapiKey) {
+      form.setValue("vapiKey", savedVapiKey)
     }
     
     setMounted(true)
@@ -166,12 +180,16 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
             objective: formData.objective,
             objections: formData.objections,
             additionalInfo: formData.additionalInfo,
-            apiKey: formData.apiKey
+            apiKey: formData.apiKey,
+            vapiKey: formData.vapiKey
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
-          // Also save API key with the same debounce timing
+          // Also save API keys with the same debounce timing
           if (formData.apiKey) {
             localStorage.setItem("openai-api-key", formData.apiKey)
+          }
+          if (formData.vapiKey) {
+            localStorage.setItem("vapi-api-key", formData.vapiKey)
           }
           timeoutId = null;
         }, 300);
@@ -195,7 +213,8 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
         objective: formData.objective,
         objections: formData.objections,
         additionalInfo: formData.additionalInfo,
-        apiKey: formData.apiKey
+        apiKey: formData.apiKey,
+        vapiKey: formData.vapiKey
       }
       debouncedSave(formDataToSave)
       
@@ -236,6 +255,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
         const restoredData = {
           model: parsedData.model || "gpt-4o-mini",
           apiKey: form.getValues("apiKey"), // Keep current API key
+          vapiKey: form.getValues("vapiKey"), // Keep current VAPI key
           aiName: parsedData.aiName || "",
           companyName: parsedData.companyName || "",
           industry: parsedData.industry || "",
@@ -275,15 +295,18 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
         objective: currentFormData.objective,
         objections: currentFormData.objections,
         additionalInfo: currentFormData.additionalInfo,
-        apiKey: currentFormData.apiKey
+        apiKey: currentFormData.apiKey,
+        vapiKey: currentFormData.vapiKey
       }
       console.log('Storing data before reset:', dataToStore)
       localStorage.setItem(DELETED_DATA_KEY, JSON.stringify(dataToStore))
       
       const apiKey = form.getValues("apiKey")
+      const vapiKey = form.getValues("vapiKey")
       form.reset({
         model: "gpt-4o-mini",
         apiKey,
+        vapiKey,
         aiName: "",
         companyName: "",
         industry: "",
@@ -299,7 +322,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
       localStorage.setItem(UNDO_STATE_KEY, "true")
       toast({
         title: "Form Reset",
-        description: "All fields have been cleared except the API key",
+        description: "All fields have been cleared except the API keys",
       })
     }
   }
@@ -312,61 +335,95 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white rounded-lg border p-6">
         <div className="space-y-4">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h3 className="text-sm font-medium">OpenAI Configuration</h3>
-                <p className="text-sm text-muted-foreground">
-                  Your API key will be saved locally
-                </p>
+          <Collapsible
+            open={isApiOpen}
+            onOpenChange={setIsApiOpen}
+            className="space-y-2"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex gap-2 items-center">
+                <CollapsibleTrigger asChild>
+                  <Button variant="ghost" size="sm" className="w-9 p-0">
+                    {isApiOpen ? (
+                      <Unlock className="h-4 w-4 transition-all" />
+                    ) : (
+                      <Lock className="h-4 w-4 transition-all" />
+                    )}
+                    <span className="sr-only">Toggle API configuration</span>
+                  </Button>
+                </CollapsibleTrigger>
+                <div>
+                  <h3 className="text-sm font-medium">API Configuration</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Your API keys will be saved locally
+                  </p>
+                </div>
               </div>
             </div>
-            <FormField
-              control={form.control}
-              name="apiKey"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="password" placeholder="sk-..." className="bg-muted/50" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <div className="flex items-end gap-2 mt-4">
-              <FormField
-                control={form.control}
-                name="model"
-                render={({ field }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Model</FormLabel>
-                    <Select onValueChange={field.onChange} value={field.value}>
+            <CollapsibleContent className="space-y-2">
+              <div className="flex gap-4">
+                <FormField
+                  control={form.control}
+                  name="apiKey"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>OpenAI API Key</FormLabel>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a model" />
-                        </SelectTrigger>
+                        <Input type="password" placeholder="sk-..." className="bg-muted/50" {...field} />
                       </FormControl>
-                      <SelectContent>
-                        {isLoadingModels ? (
-                          <SelectItem value="loading" disabled>
-                            Loading models...
-                          </SelectItem>
-                        ) : (
-                          models.map((model) => (
-                            <SelectItem key={model.id} value={model.id}>
-                              {model.id}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="vapiKey"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>VAPI API Key</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="vapi-..." className="bg-muted/50" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="flex items-end gap-2 mt-4">
+                <FormField
+                  control={form.control}
+                  name="model"
+                  render={({ field }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Model</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a model" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingModels ? (
+                            <SelectItem value="loading" disabled>
+                              Loading models...
                             </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-            <Separator className="my-4" />
-          </div>
+                          ) : (
+                            models.map((model) => (
+                              <SelectItem key={model.id} value={model.id}>
+                                {model.id}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </CollapsibleContent>
+          </Collapsible>
+          <Separator className="my-4" />
 
           <div className="grid grid-cols-2 gap-2">
             <FormField
