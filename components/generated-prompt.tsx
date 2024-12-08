@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown"
 import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Copy } from "lucide-react"
 
 interface PromptHistoryItem {
   id: string
@@ -88,32 +89,33 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
             )}
           </TabsTrigger>
         </TabsList>
-        {prompt && activeTab === "current" && (
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => copyToClipboard(prompt)}
-            className="text-xs"
-          >
-            Copy to Clipboard
-          </Button>
-        )}
       </div>
 
       <TabsContent value="current" className="mt-0">
-        <div className="rounded-lg border bg-white p-6 text-sm">
-          {isLoading ? (
-            <div className="flex items-center justify-center">
-              <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
-            </div>
-          ) : prompt ? (
-            <div className="prose prose-sm max-w-none dark:prose-invert">
+        <div className="relative mt-4">
+          <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
+              </div>
+            ) : prompt ? (
               <ReactMarkdown>{prompt}</ReactMarkdown>
-            </div>
-          ) : (
-            <div className="text-center text-muted-foreground">
-              Your generated prompt will appear here
-            </div>
+            ) : (
+              <div className="text-center text-muted-foreground">
+                Your generated prompt will appear here
+              </div>
+            )}
+          </div>
+          {prompt && !isLoading && (
+            <Button
+              variant="secondary"
+              size="icon"
+              className="absolute right-2 -top-4 h-8 w-8 rounded-full border shadow-sm"
+              onClick={() => copyToClipboard(prompt)}
+            >
+              <Copy className="h-4 w-4" />
+              <span className="sr-only">Copy to clipboard</span>
+            </Button>
           )}
         </div>
       </TabsContent>
