@@ -37,13 +37,10 @@ export async function startCall(systemPrompt: string, context: { assistantName: 
         provider: 'openai' as const,
         model: 'gpt-4o' as const,
         messages: [
-          { role: 'system' as const, content: systemPrompt },
-          { 
-            role: 'assistant' as const, 
-            content: `Hi, this is ${context.assistantName} from ${context.companyName}, is this the owner?` 
-          }
+          { role: 'system' as const, content: systemPrompt }
         ]
       },
+      firstMessage: `Hi, this is ${context.assistantName} from ${context.companyName}, is this the owner?`,
       transcriber: {
         provider: 'deepgram' as const,
         model: 'nova-2' as const,
