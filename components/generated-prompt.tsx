@@ -124,17 +124,13 @@ export function GeneratedPrompt({
         </div>
       </TabsContent>
 
-      <TabsContent value="history" className="mt-0 flex-1 min-h-0">
+      <TabsContent value="history" className="mt-0 flex-1 min-h-0 overflow-auto">
         {history.length > 0 ? (
-          <div className="h-full rounded-md border bg-white/50 p-4">
-            <div className="overflow-auto h-full">
-              <PromptHistory 
-                history={history} 
-                onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
-                onRestore={handleRestoreItem}
-              />
-            </div>
-          </div>
+          <PromptHistory 
+            history={history} 
+            onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
+            onRestore={handleRestoreItem}
+          />
         ) : (
           <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
             No history yet. Generated prompts will appear here.
