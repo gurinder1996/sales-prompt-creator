@@ -104,6 +104,7 @@ export function PromptContainer() {
           onSubmit={handleSubmit} 
           isLoading={isLoading} 
           restoredFormData={currentFormData}
+          onFormDataLoad={setCurrentFormData}
         />
       </div>
       <div className="mt-0 lg:mt-0 lg:pl-0 flex flex-col" style={{ height: formHeight ? `${formHeight}px` : 'auto' }}>

@@ -24,11 +24,12 @@ interface PromptHistoryProps {
   history: PromptHistoryItem[]
   onDelete: (id: string) => void
   onRestore: (formData: FormValues, prompt: string) => void
+  currentFormData: FormValues | null
 }
 
 const ITEMS_PER_PAGE = 10
 
-export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryProps) {
+export function PromptHistory({ history, onDelete, onRestore, currentFormData }: PromptHistoryProps) {
   const [currentPage, setCurrentPage] = useState(0)
   const [openItems, setOpenItems] = useState<Set<string>>(new Set())
 
@@ -88,8 +89,12 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
                 <div className="flex gap-1">
                   <CallButton 
                     onCall={async () => {
-                      // Initialize VAPI with key from form
-                      await initialize(item.formData.vapiKey);
+                      if (!currentFormData?.vapiKey) {
+                        throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
+                      }
+                      
+                      // Always use the current form's API key
+                      await initialize(currentFormData.vapiKey);
                       
                       await startCall(item.content, {
                         assistantName: item.formData.aiName || 'AI Assistant',

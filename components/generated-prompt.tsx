@@ -59,7 +59,12 @@ export function GeneratedPrompt({
         id: Math.random().toString(36).substring(7),
         content: prompt,
         timestamp: Date.now(),
-        formData: currentFormData ? { ...currentFormData } : {
+        formData: currentFormData ? {
+          ...currentFormData,
+          // Don't store API keys in history
+          apiKey: "",
+          vapiKey: "",
+        } : {
           apiKey: "",
           vapiKey: "",
           model: "gpt-4o-mini",
@@ -90,6 +95,10 @@ export function GeneratedPrompt({
     onRestoreFormData(formData)
     onRestorePrompt(prompt)
     setActiveTab("current")
+  }
+
+  const handleDeleteItem = (id: string) => {
+    setHistory(prev => prev.filter(item => item.id !== id))
   }
 
   return (
@@ -144,6 +153,9 @@ export function GeneratedPrompt({
                       throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
                     }
                     
+                    // Debug logging
+                    console.log('Current tab using VAPI key:', currentFormData.vapiKey);
+                    
                     // Initialize VAPI client with key from form (it will be properly formatted in the client)
                     await initialize(currentFormData.vapiKey);
                     
@@ -167,18 +179,15 @@ export function GeneratedPrompt({
           </div>
         </TabsContent>
 
-        <TabsContent value="history" className="absolute inset-0 overflow-auto">
-          {history.length > 0 ? (
+        <TabsContent value="history" className="absolute inset-0">
+          <div className="h-full overflow-auto" style={{ maxHeight: containerHeight ? `${containerHeight - 48}px` : 'auto' }}>
             <PromptHistory 
               history={history} 
-              onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
+              onDelete={handleDeleteItem} 
               onRestore={handleRestoreItem}
+              currentFormData={currentFormData}
             />
-          ) : (
-            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
-              No history yet. Generated prompts will appear here.
-            </div>
-          )}
+          </div>
         </TabsContent>
       </div>
     </Tabs>

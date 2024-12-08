@@ -52,13 +52,14 @@ interface PromptFormProps {
   onSubmit: (values: FormValues) => void
   isLoading?: boolean
   restoredFormData: FormValues | null
+  onFormDataLoad?: (values: FormValues) => void
 }
 
 const STORAGE_KEY = "sales-prompt-form"
 const DELETED_DATA_KEY = "sales-prompt-form-deleted"
 const UNDO_STATE_KEY = "sales-prompt-form-can-undo"
 
-export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: PromptFormProps) {
+export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFormDataLoad }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
   const [models, setModels] = useState<Array<{ id: string }>>([
     { id: "gpt-4o-mini" }
@@ -113,7 +114,12 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
     }
     
     setMounted(true)
-  }, [form])
+    
+    // Notify parent of loaded form data without triggering submission
+    if (onFormDataLoad) {
+      onFormDataLoad(form.getValues())
+    }
+  }, [form, onFormDataLoad])
 
   // Fetch available models only when API key is valid
   const fetchModels = useCallback(async (apiKey: string) => {
