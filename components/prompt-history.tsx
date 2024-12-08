@@ -9,7 +9,7 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import { FormValues } from "./prompt-form"
-import { CopyButton, DeleteButton, RestoreButton } from "./prompt-actions"
+import { CopyButton, DeleteButton, RestoreButton, CallButton } from "./prompt-actions"
 import { Button } from "./ui/button"
 
 interface PromptHistoryItem {
@@ -85,6 +85,16 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
                   </button>
                 </CollapsibleTrigger>
                 <div className="flex gap-1">
+                  <CallButton 
+                    onCall={async () => {
+                      // TODO: Implement call initialization
+                      console.log("Starting call with history item:", item.id)
+                    }}
+                    onHangup={async () => {
+                      // TODO: Implement call termination
+                      console.log("Ending call for history item:", item.id)
+                    }}
+                  />
                   <CopyButton text={item.content} />
                   <RestoreButton 
                     onRestore={() => onRestore(item.formData, item.content)} 
