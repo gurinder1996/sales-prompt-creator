@@ -30,7 +30,7 @@ class VapiClientSingleton {
       return;
     }
     
-    // If client exists with a different key, clean it up
+    // Always clean up the existing client
     if (this.client) {
       this.client = null;
     }
