@@ -88,15 +88,8 @@ export function PromptContainer() {
   }
 
   const handleRestoreFormData = (formData: FormValues | null) => {
-    if (formData && currentFormData) {
-      // Preserve the current API keys when restoring form data
-      setCurrentFormData({
-        ...formData,
-        apiKey: currentFormData.apiKey,
-        vapiKey: currentFormData.vapiKey,
-      });
-    } else {
-      setCurrentFormData(formData);
+    if (formData) {
+      setCurrentFormData(formData)
     }
   }
 

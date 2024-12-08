@@ -180,6 +180,14 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
     }
   }, [apiKey, mounted, fetchModels])
 
+  // Watch for API keys changes and notify parent
+  useEffect(() => {
+    if (mounted) {
+      const formData = form.getValues()
+      onFormDataLoad?.(formData)
+    }
+  }, [mounted, form.watch("vapiKey"), form.watch("apiKey"), onFormDataLoad])
+
   // Debounced save function
   const debouncedSave = useCallback(
     (() => {
