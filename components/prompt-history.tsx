@@ -89,11 +89,7 @@ export function PromptHistory({ history, onDelete, onRestore, currentFormData }:
                   <CallButton 
                     buttonId={`history-${item.id}`}
                     onCall={async () => {
-                      if (!currentFormData) {
-                        throw new Error('Please fill out the form first');
-                      }
-
-                      if (!currentFormData.vapiKey) {
+                      if (!currentFormData?.vapiKey) {
                         throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
                       }
 
@@ -101,8 +97,8 @@ export function PromptHistory({ history, onDelete, onRestore, currentFormData }:
                         apiKey: currentFormData.vapiKey,
                         systemPrompt: item.content,
                         context: {
-                          assistantName: currentFormData.aiName || 'AI Assistant',
-                          companyName: currentFormData.companyName || 'Company'
+                          assistantName: item.formData.aiName || 'AI Assistant',
+                          companyName: item.formData.companyName || 'Company'
                         }
                       };
                     }}
