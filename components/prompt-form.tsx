@@ -234,12 +234,13 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
-            <div className="flex items-center gap-2 mt-4">
+            <div className="flex items-end gap-2 mt-4">
               <FormField
                 control={form.control}
                 name="model"
                 render={({ field }) => (
                   <FormItem className="flex-1">
+                    <FormLabel>Model</FormLabel>
                     <Select onValueChange={field.onChange} value={field.value}>
                       <FormControl>
                         <SelectTrigger>
@@ -268,7 +269,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 type="button"
                 variant="outline"
                 onClick={resetForm}
-                className="whitespace-nowrap"
+                className="whitespace-nowrap mb-[2px]"
                 size="sm"
               >
                 Reset Form
