@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import ReactMarkdown from "react-markdown"
-import { Trash2, ChevronDown } from "lucide-react"
+import { Trash2, ChevronDown, Copy } from "lucide-react"
 import { useState } from "react"
 import {
   Collapsible,
@@ -90,17 +90,30 @@ export function PromptHistory({ history, onDelete }: PromptHistoryProps) {
                     </span>
                   </button>
                 </CollapsibleTrigger>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    onDelete(item.id)
-                  }}
-                  className="ml-2 h-8 w-8 p-0 text-muted-foreground hover:text-destructive shrink-0"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      copyToClipboard(item.content)
+                    }}
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-primary shrink-0"
+                  >
+                    <Copy className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onDelete(item.id)
+                    }}
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive shrink-0"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
               <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
                 <div 
