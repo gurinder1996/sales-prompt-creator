@@ -58,6 +58,7 @@ interface PromptFormProps {
 const STORAGE_KEY = "sales-prompt-form"
 const DELETED_DATA_KEY = "sales-prompt-form-deleted"
 const UNDO_STATE_KEY = "sales-prompt-form-can-undo"
+const API_SECTION_STATE_KEY = "sales-prompt-form-api-section"
 
 export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFormDataLoad }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
@@ -68,6 +69,21 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
   const [canUndo, setCanUndo] = useState(false)
   const [isApiOpen, setIsApiOpen] = useState(false)
   const { toast } = useToast()
+
+  // Load API section state from localStorage
+  useEffect(() => {
+    const savedApiSectionState = localStorage.getItem(API_SECTION_STATE_KEY)
+    if (savedApiSectionState !== null) {
+      setIsApiOpen(savedApiSectionState === "true")
+    }
+  }, [])
+
+  // Save API section state to localStorage whenever it changes
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem(API_SECTION_STATE_KEY, isApiOpen.toString())
+    }
+  }, [isApiOpen, mounted])
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
