@@ -153,9 +153,6 @@ export function GeneratedPrompt({
                       throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
                     }
                     
-                    // Debug logging
-                    console.log('Current tab using VAPI key:', currentFormData.vapiKey);
-                    
                     // Initialize VAPI client with key from form (it will be properly formatted in the client)
                     await initialize(currentFormData.vapiKey);
                     
