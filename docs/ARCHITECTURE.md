@@ -19,11 +19,22 @@ A single-page Next.js application that replaces the Make.com automation for gene
   - Manages client-side state and form submission logic
 
 ### Components
-1. **Form Components** (`components/`)
-   - `PromptForm.tsx`: Main form container
-   - `ApiKeyInput.tsx`: OpenAI API key input with local storage integration
-   - `ModelSelector.tsx`: GPT model selection dropdown
-   - `ResultDisplay.tsx`: Generated prompt display area
+1. **Core Components** (`components/`)
+   - `prompt-container.tsx`: Main application container
+   - `prompt-form.tsx`: Main form container with form logic
+   - `form-fields.tsx`: Form field definitions and layouts
+   - `form-controls.tsx`: Form control buttons and actions
+   - `generated-prompt.tsx`: Display area for generated prompts
+   - `model-config.tsx`: OpenAI model configuration and API key management
+   - `prompt-actions.tsx`: Actions for generated prompts (copy, regenerate)
+   - `prompt-history.tsx`: Management of previously generated prompts
+
+2. **UI Components** (`components/ui/`)
+   - Utilizes shadcn/ui components including:
+     - Form controls (input, textarea, select)
+     - Layout components (card, tabs, collapsible)
+     - Feedback components (alert, toast, tooltip)
+     - Interactive elements (button, separator)
 
 ### Type Definitions (`types/`)
 ```typescript
@@ -46,9 +57,8 @@ interface OpenAIConfig {
 ```
 
 ### Utilities (`lib/`)
-- `openai.ts`: OpenAI API integration and prompt generation
-- `localStorage.ts`: API key persistence helpers
-- `validation.ts`: Zod schemas for form validation
+- `openai.ts`: OpenAI API integration, prompt generation, and model configuration
+- `utils.ts`: Common utility functions and helpers
 
 ## Data Flow
 1. User enters OpenAI API key (stored in localStorage)
@@ -81,8 +91,14 @@ interface OpenAIConfig {
 - Debounced API calls
 - Proper error handling with user feedback
 
+## Implemented Features
+- Complete form-based prompt generation
+- OpenAI model selection and configuration
+- Prompt history with local storage
+- Copy and regenerate functionality
+- Rich error handling and user feedback
+
 ## Future Considerations
-- Prompt history in localStorage (optional)
 - Export/import functionality
 - Template management
 - A/B testing different prompt structures
