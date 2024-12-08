@@ -47,6 +47,8 @@ interface PromptFormProps {
 }
 
 const STORAGE_KEY = "sales-prompt-form"
+const DELETED_DATA_KEY = "sales-prompt-form-deleted"
+const UNDO_STATE_KEY = "sales-prompt-form-can-undo"
 
 export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
@@ -55,6 +57,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
     { id: "gpt-4o" }
   ])
   const [isLoadingModels, setIsLoadingModels] = useState(false)
+  const [canUndo, setCanUndo] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
@@ -78,6 +81,9 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   useEffect(() => {
     const savedApiKey = localStorage.getItem("openai-api-key")
     const savedFormData = localStorage.getItem(STORAGE_KEY)
+    const canUndoState = localStorage.getItem(UNDO_STATE_KEY) === "true"
+    
+    setCanUndo(canUndoState)
     
     if (savedFormData) {
       const parsedData = JSON.parse(savedFormData)
@@ -159,6 +165,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
             objective: formData.objective,
             objections: formData.objections,
             additionalInfo: formData.additionalInfo,
+            apiKey: formData.apiKey
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
           // Also save API key with the same debounce timing
@@ -176,34 +183,112 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   useEffect(() => {
     if (mounted) {
       const formData = form.getValues()
-      debouncedSave(formData)
+      const formDataToSave = {
+        model: formData.model,
+        aiName: formData.aiName,
+        companyName: formData.companyName,
+        industry: formData.industry,
+        targetAudience: formData.targetAudience,
+        challenges: formData.challenges,
+        product: formData.product,
+        objective: formData.objective,
+        objections: formData.objections,
+        additionalInfo: formData.additionalInfo,
+        apiKey: formData.apiKey
+      }
+      debouncedSave(formDataToSave)
+      
+      // Only disable undo if the form has been modified
+      if (form.formState.isDirty && canUndo) {
+        setCanUndo(false)
+        localStorage.setItem(UNDO_STATE_KEY, "false")
+        localStorage.removeItem(DELETED_DATA_KEY)
+      }
     }
-  }, [form.watch(), mounted, debouncedSave])
+  }, [form.formState.isDirty, mounted, debouncedSave, canUndo])
 
   const handleSubmit = (values: FormValues) => {
     onSubmit(values)
   }
 
   const resetForm = () => {
-    const apiKey = form.getValues("apiKey")
-    form.reset({
-      model: "gpt-4o-mini",
-      apiKey,
-      aiName: "",
-      companyName: "",
-      industry: "",
-      targetAudience: "",
-      challenges: "",
-      product: "",
-      objective: "",
-      objections: "",
-      additionalInfo: "",
-    })
-    localStorage.removeItem(STORAGE_KEY)
-    toast({
-      title: "Form Reset",
-      description: "All fields have been cleared except the API key",
-    })
+    if (canUndo) {
+      // Restore the deleted data
+      const deletedData = localStorage.getItem(DELETED_DATA_KEY)
+      if (deletedData) {
+        const parsedData = JSON.parse(deletedData)
+        console.log('Restoring data:', parsedData)
+        
+        // Ensure we have all the required fields
+        const restoredData = {
+          model: parsedData.model || "gpt-4o-mini",
+          apiKey: form.getValues("apiKey"), // Keep current API key
+          aiName: parsedData.aiName || "",
+          companyName: parsedData.companyName || "",
+          industry: parsedData.industry || "",
+          targetAudience: parsedData.targetAudience || "",
+          challenges: parsedData.challenges || "",
+          product: parsedData.product || "",
+          objective: parsedData.objective || "",
+          objections: parsedData.objections || "",
+          additionalInfo: parsedData.additionalInfo || ""
+        }
+        
+        // Reset form with complete data
+        form.reset(restoredData)
+        
+        // Update localStorage
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredData))
+        localStorage.removeItem(DELETED_DATA_KEY)
+        setCanUndo(false)
+        localStorage.setItem(UNDO_STATE_KEY, "false")
+        
+        toast({
+          title: "Form Restored",
+          description: "Previous form data has been restored",
+        })
+      }
+    } else {
+      // Store the current data before clearing
+      const currentFormData = form.getValues()
+      const dataToStore = {
+        model: currentFormData.model,
+        aiName: currentFormData.aiName,
+        companyName: currentFormData.companyName,
+        industry: currentFormData.industry,
+        targetAudience: currentFormData.targetAudience,
+        challenges: currentFormData.challenges,
+        product: currentFormData.product,
+        objective: currentFormData.objective,
+        objections: currentFormData.objections,
+        additionalInfo: currentFormData.additionalInfo,
+        apiKey: currentFormData.apiKey
+      }
+      console.log('Storing data before reset:', dataToStore)
+      localStorage.setItem(DELETED_DATA_KEY, JSON.stringify(dataToStore))
+      
+      const apiKey = form.getValues("apiKey")
+      form.reset({
+        model: "gpt-4o-mini",
+        apiKey,
+        aiName: "",
+        companyName: "",
+        industry: "",
+        targetAudience: "",
+        challenges: "",
+        product: "",
+        objective: "",
+        objections: "",
+        additionalInfo: "",
+      })
+      localStorage.removeItem(STORAGE_KEY)
+      setCanUndo(true)
+      localStorage.setItem(UNDO_STATE_KEY, "true")
+      toast({
+        title: "Form Reset",
+        description: "All fields have been cleared except the API key",
+      })
+    }
   }
 
   if (!mounted) {
@@ -443,7 +528,7 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
             disabled={isLoading}
             size="lg"
           >
-            Reset
+            {canUndo ? "Undo" : "Reset"}
           </Button>
         </div>
       </form>
