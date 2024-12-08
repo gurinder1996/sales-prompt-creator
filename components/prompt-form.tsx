@@ -221,47 +221,6 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   Your API key will be saved locally
                 </p>
               </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={resetForm}
-                  className="text-xs"
-                  size="sm"
-                >
-                  Reset Form
-                </Button>
-                <FormField
-                  control={form.control}
-                  name="model"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Model</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a model" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {isLoadingModels ? (
-                            <SelectItem value="loading" disabled>
-                              Loading models...
-                            </SelectItem>
-                          ) : (
-                            models.map((model) => (
-                              <SelectItem key={model.id} value={model.id}>
-                                {model.id}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </div>
             <FormField
               control={form.control}
@@ -275,6 +234,46 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                 </FormItem>
               )}
             />
+            <div className="flex items-center gap-2 mt-4">
+              <FormField
+                control={form.control}
+                name="model"
+                render={({ field }) => (
+                  <FormItem className="flex-1">
+                    <Select onValueChange={field.onChange} value={field.value}>
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a model" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {isLoadingModels ? (
+                          <SelectItem value="loading" disabled>
+                            Loading models...
+                          </SelectItem>
+                        ) : (
+                          models.map((model) => (
+                            <SelectItem key={model.id} value={model.id}>
+                              {model.id}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                onClick={resetForm}
+                className="whitespace-nowrap"
+                size="sm"
+              >
+                Reset Form
+              </Button>
+            </div>
           </div>
 
           <div className="grid grid-cols-2 gap-2">
