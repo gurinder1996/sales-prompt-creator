@@ -11,6 +11,7 @@ const STORAGE_KEY = "sales-prompt-result"
 export function PromptContainer() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
+  const [currentFormData, setCurrentFormData] = useState<FormValues | null>(null)
 
   // Load saved result from localStorage
   useEffect(() => {
@@ -27,8 +28,9 @@ export function PromptContainer() {
     }
   }, [result])
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async (values: FormValues) => {
     setIsLoading(true)
+    setCurrentFormData(values)
     try {
       const prompt = await generateSalesPrompt(values)
       setResult(prompt)
@@ -39,13 +41,31 @@ export function PromptContainer() {
     }
   }
 
+  const handleRestoreFormData = (formData: FormValues) => {
+    setCurrentFormData(formData)
+  }
+
+  const handleRestorePrompt = (prompt: string) => {
+    setResult(prompt)
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2">
       <div>
-        <PromptForm onSubmit={handleSubmit} isLoading={isLoading} />
+        <PromptForm 
+          onSubmit={handleSubmit} 
+          isLoading={isLoading} 
+          restoredFormData={currentFormData}
+        />
       </div>
       <div className="mt-6 lg:mt-0 lg:pl-8">
-        <GeneratedPrompt prompt={result} isLoading={isLoading} />
+        <GeneratedPrompt 
+          prompt={result} 
+          isLoading={isLoading}
+          currentFormData={currentFormData || {} as FormValues}
+          onRestoreFormData={handleRestoreFormData}
+          onRestorePrompt={handleRestorePrompt}
+        />
       </div>
     </div>
   )

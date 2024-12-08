@@ -7,21 +7,32 @@ import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Copy } from "lucide-react"
+import { FormValues } from "./prompt-form"
 
 interface PromptHistoryItem {
   id: string
   content: string
   timestamp: number
+  formData: FormValues
 }
 
 interface GeneratedPromptProps {
   prompt: string | null
   isLoading: boolean
+  currentFormData: FormValues
+  onRestoreFormData: (formData: FormValues) => void
+  onRestorePrompt: (prompt: string) => void
 }
 
 const HISTORY_STORAGE_KEY = "prompt-history"
 
-export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
+export function GeneratedPrompt({ 
+  prompt, 
+  isLoading, 
+  currentFormData,
+  onRestoreFormData,
+  onRestorePrompt
+}: GeneratedPromptProps) {
   const { toast } = useToast()
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
   const [activeTab, setActiveTab] = useState("current")
@@ -46,6 +57,7 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
         id: Math.random().toString(36).substring(7),
         content: prompt,
         timestamp: Date.now(),
+        formData: { ...currentFormData }
       }
       setHistory(prev => {
         // Check if this exact prompt is already in history
@@ -57,7 +69,7 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
       // Switch to current tab when new prompt is generated
       setActiveTab("current")
     }
-  }, [prompt, isLoading])
+  }, [prompt, isLoading, currentFormData])
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
@@ -73,6 +85,12 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
       title: "Deleted",
       description: "Prompt removed from history",
     })
+  }
+
+  const handleRestoreItem = (formData: FormValues, prompt: string) => {
+    onRestoreFormData(formData)
+    onRestorePrompt(prompt)
+    setActiveTab("current")
   }
 
   return (
@@ -125,6 +143,7 @@ export function GeneratedPrompt({ prompt, isLoading }: GeneratedPromptProps) {
           <PromptHistory 
             history={history} 
             onDelete={deleteHistoryItem} 
+            onRestore={handleRestoreItem}
           />
         ) : (
           <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">

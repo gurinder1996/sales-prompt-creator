@@ -3,28 +3,31 @@
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import ReactMarkdown from "react-markdown"
-import { Trash2, ChevronDown, Copy } from "lucide-react"
+import { Trash2, ChevronDown, Copy, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+import { FormValues } from "./prompt-form"
 
 interface PromptHistoryItem {
   id: string
   content: string
   timestamp: number
+  formData: FormValues
 }
 
 interface PromptHistoryProps {
   history: PromptHistoryItem[]
   onDelete: (id: string) => void
+  onRestore: (formData: FormValues, prompt: string) => void
 }
 
 const ITEMS_PER_PAGE = 10
 
-export function PromptHistory({ history, onDelete }: PromptHistoryProps) {
+export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryProps) {
   const { toast } = useToast()
   const [currentPage, setCurrentPage] = useState(0)
   const [openItems, setOpenItems] = useState<Set<string>>(new Set())
@@ -101,6 +104,23 @@ export function PromptHistory({ history, onDelete }: PromptHistoryProps) {
                     className="h-8 w-8 p-0 text-muted-foreground hover:text-primary shrink-0"
                   >
                     <Copy className="h-4 w-4" />
+                    <span className="sr-only">Copy to clipboard</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      onRestore(item.formData, item.content)
+                      toast({
+                        title: "Form Restored",
+                        description: "Previous form data has been restored",
+                      })
+                    }}
+                    className="h-8 w-8 p-0 text-muted-foreground hover:text-emerald-600 shrink-0"
+                  >
+                    <RotateCcw className="h-4 w-4" />
+                    <span className="sr-only">Restore form data</span>
                   </Button>
                   <Button
                     variant="ghost"
@@ -112,6 +132,7 @@ export function PromptHistory({ history, onDelete }: PromptHistoryProps) {
                     className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive shrink-0"
                   >
                     <Trash2 className="h-4 w-4" />
+                    <span className="sr-only">Delete history item</span>
                   </Button>
                 </div>
               </div>

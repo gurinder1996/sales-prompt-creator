@@ -44,13 +44,14 @@ export type FormValues = z.infer<typeof formSchema>
 interface PromptFormProps {
   onSubmit: (values: FormValues) => void
   isLoading?: boolean
+  restoredFormData: FormValues | null
 }
 
 const STORAGE_KEY = "sales-prompt-form"
 const DELETED_DATA_KEY = "sales-prompt-form-deleted"
 const UNDO_STATE_KEY = "sales-prompt-form-can-undo"
 
-export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
+export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
   const [models, setModels] = useState<Array<{ id: string }>>([
     { id: "gpt-4o-mini" },
@@ -206,6 +207,14 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
       }
     }
   }, [form.formState.isDirty, mounted, debouncedSave, canUndo])
+
+  // Handle restored form data
+  useEffect(() => {
+    if (restoredFormData && mounted) {
+      form.reset(restoredFormData)
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredFormData))
+    }
+  }, [restoredFormData, form, mounted])
 
   const handleSubmit = (values: FormValues) => {
     onSubmit(values)
