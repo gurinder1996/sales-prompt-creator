@@ -94,19 +94,21 @@ export function GeneratedPrompt({
 
       <TabsContent value="current" className="mt-0">
         <div className="relative mt-4">
-          <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
-            {isLoading ? (
+          {isLoading ? (
+            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
               <div className="flex items-center justify-center">
                 <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
               </div>
-            ) : prompt ? (
+            </div>
+          ) : prompt ? (
+            <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
               <ReactMarkdown>{prompt}</ReactMarkdown>
-            ) : (
-              <div className="text-center text-muted-foreground">
-                Your generated prompt will appear here
-              </div>
-            )}
-          </div>
+            </div>
+          ) : (
+            <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
+              Your generated prompt will appear here.
+            </div>
+          )}
           {prompt && !isLoading && (
             <div className="absolute right-2 -top-4 flex gap-1">
               <CopyButton text={prompt} />
