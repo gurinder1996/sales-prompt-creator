@@ -61,8 +61,7 @@ const UNDO_STATE_KEY = "sales-prompt-form-can-undo"
 export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
   const [models, setModels] = useState<Array<{ id: string }>>([
-    { id: "gpt-4o-mini" },
-    { id: "gpt-4o" }
+    { id: "gpt-4o-mini" }
   ])
   const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [canUndo, setCanUndo] = useState(false)
@@ -129,12 +128,11 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData }: Pr
       })
       const modelList = await openai.models.list()
       // Ensure our default models are always included
-      const defaultModels = ["gpt-4o-mini", "gpt-4o"]
+      const defaultModels = ["gpt-4o-mini"]
       const allModels = Array.from(modelList.data)
       const filteredModels = allModels.filter(model => !defaultModels.includes(model.id))
       setModels([
         { id: "gpt-4o-mini" },
-        { id: "gpt-4o" },
         ...filteredModels
       ])
     } catch (error) {

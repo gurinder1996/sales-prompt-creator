@@ -35,6 +35,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: ^1.1.4
         version: 1.1.4(@types/react-dom@19.0.1)(@types/react@19.0.1)(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
+      '@vapi-ai/web':
+        specifier: ^2.1.8
+        version: 2.1.8
       '@vercel/analytics':
         specifier: ^1.4.1
         version: 1.4.1(next@15.0.4(@babel/core@7.26.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
@@ -215,6 +218,10 @@ packages:
     peerDependencies:
       '@babel/core': ^7.0.0-0
 
+  '@babel/runtime@7.26.0':
+    resolution: {integrity: sha512-FDSOghenHTiToteC/QRlv2q3DhPZ/oOXTBoirfWNx1Cx3TMVcGWQtMMmQcSvb/JjpNeGzx8Pq/b4fKEJuWm1sw==}
+    engines: {node: '>=6.9.0'}
+
   '@babel/template@7.25.9':
     resolution: {integrity: sha512-9DGttpmPvIxBb/2uwpVo3dqJ+O6RooAFOS+lB+xDqoE2PVCE8nfoHMdZLpfCQRLwvohzXISPZcgxt80xLfsuwg==}
     engines: {node: '>=6.9.0'}
@@ -226,6 +233,10 @@ packages:
   '@babel/types@7.26.3':
     resolution: {integrity: sha512-vN5p+1kl59GVKMvTHt55NzzmYVxprfJD+ql7U9NFIfKCBkYE55LYtS+WtPlaYOyzydrKI8Nezd+aZextrd+FMA==}
     engines: {node: '>=6.9.0'}
+
+  '@daily-co/daily-js@0.72.2':
+    resolution: {integrity: sha512-beUN/V4S4++ZYIUAfRnRt/rUjc2jkCrc2YxghMEyUPxjZy1n73OCtbty68RDMpSYkIs89ailJaUNRLcPhIuMaw==}
+    engines: {node: '>=10.0.0'}
 
   '@emnapi/runtime@1.3.1':
     resolution: {integrity: sha512-kEBmG8KyqtxJZv+ygbEim+KCGtIq1fC22Ms3S4ziXmYKm8uyoLX0MHONVKwp+9opg390VaKRNt4a7A9NwmpNhw==}
@@ -844,6 +855,42 @@ packages:
   '@rushstack/eslint-patch@1.10.4':
     resolution: {integrity: sha512-WJgX9nzTqknM393q1QJDJmoW28kUfEnybeTfVNcNAPnIx210RXm2DiXiHzfNPJNIUUb1tJnz/l4QGtJ30PgWmA==}
 
+  '@sentry-internal/feedback@7.120.1':
+    resolution: {integrity: sha512-t13r4vYtc+/3mUz6PMlW63TkqPasOreGO01elr5ZsrhaCE/1QgHGYXd+wwSPN83qfTfaCvhptMXbNOxevuA35Q==}
+    engines: {node: '>=12'}
+
+  '@sentry-internal/replay-canvas@7.120.1':
+    resolution: {integrity: sha512-615YoAajF81OsqpKPe9JSBb4CPEAIFqr8LKTcT0A6/qmyNn22unOhmWSMHSJ7DvLUvsXGNO4meU1RHI9EopvWg==}
+    engines: {node: '>=12'}
+
+  '@sentry-internal/tracing@7.120.1':
+    resolution: {integrity: sha512-MwZlhQY27oM4V05m2Q46WB2F7jqFu8fewg14yRcjCuK3tdxvQoLsXOEPMZxLxpoXPTqPCm3Ig7mA4GwdlCL41w==}
+    engines: {node: '>=8'}
+
+  '@sentry/browser@7.120.1':
+    resolution: {integrity: sha512-MSd35oyl8hmRTxrdtwC0CHWdZEPpFxhK2VXPRXvhpeRPxARpbYkXI0qUyEK4kAI0x1bjooshWeq0rzmgnqa6xA==}
+    engines: {node: '>=8'}
+
+  '@sentry/core@7.120.1':
+    resolution: {integrity: sha512-tXpJlf/8ngsSCpcRD+4DDvh4TqUbY0MlvE9Mpc/jO5GgYl/goAH2H1COw6W/UNfkr/l80P2jejS0HLPk0moi0A==}
+    engines: {node: '>=8'}
+
+  '@sentry/integrations@7.120.1':
+    resolution: {integrity: sha512-dshhLZUN+pYpyZiS5QRYKaYSqvWYtmsbwmBlH4SCGOnN9sbY4nZn0h8njr+xKT8UFnPxoTlbZmkcrVY3qPVMfg==}
+    engines: {node: '>=8'}
+
+  '@sentry/replay@7.120.1':
+    resolution: {integrity: sha512-dv1k8fTeppsO3VQMqciKwD1xSOUugXtjhy5Hid2Lev3S3JxPIrt32GJLEENTaLbOmMbraLdLN0P/wTFDtQzXZQ==}
+    engines: {node: '>=12'}
+
+  '@sentry/types@7.120.1':
+    resolution: {integrity: sha512-f/WT7YUH8SA2Jhez/hYz/dA351AJqr1Eht/URUdYsqMFecXr/blAcNKRVFccSsvQeTqWVV9HVQ9BXUSjPJOvFA==}
+    engines: {node: '>=8'}
+
+  '@sentry/utils@7.120.1':
+    resolution: {integrity: sha512-4boeo5Y3zw3gFrWZmPHsYOIlTh//eBaGBgWL25FqLbLObO23gFE86G6O6knP1Gamm1DGX2IWH7w4MChYuBm6tA==}
+    engines: {node: '>=8'}
+
   '@swc/counter@0.1.3':
     resolution: {integrity: sha512-e2BR4lsJkkRlKZ/qCHPw9ZaSxc0MVUd7gtbtaB7aMvHeJVYe8sOB8DBZkP2DtISHGSku9sCK6T6cnY0CtXrOCQ==}
 
@@ -964,6 +1011,9 @@ packages:
 
   '@ungap/structured-clone@1.2.0':
     resolution: {integrity: sha512-zuVdFrMJiuCDQUMCzQaD6KL28MjnqqN8XnAqiEq9PNm/hCPTSGfrXCOfwj1ow4LFb/tNymJPwsNbVePc1xFqrQ==}
+
+  '@vapi-ai/web@2.1.8':
+    resolution: {integrity: sha512-2/P2WWW0OOWms7UDyVF5VUR2M/gIVSWxygORyWnHbZ90Olaib3wt3rEEZvJIJkef7I0IHbbrBaUk3x0x33+Grg==}
 
   '@vercel/analytics@1.4.1':
     resolution: {integrity: sha512-ekpL4ReX2TH3LnrRZTUKjHHNpNy9S1I7QmS+g/RQXoSUQ8ienzosuX7T9djZ/s8zPhBx1mpHP/Rw5875N+zQIQ==}
@@ -1122,6 +1172,9 @@ packages:
 
   bl@5.1.0:
     resolution: {integrity: sha512-tv1ZJHLfTDnXE6tMHv73YgSJaWR2AFuPwMntBe7XL/GBFHnT0CLnsHMogfk5+GzCDC5ZWarSCYaIGATZt9dNsQ==}
+
+  bowser@2.11.0:
+    resolution: {integrity: sha512-AlcaJBi/pqqJBIQ8U9Mcpc9i8Aqxn88Skv5d+xBX006BY5u8N3mGLHa5Lgppa7L/HfwgwLgZ6NYs+Ag6uUmJRA==}
 
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
@@ -1547,6 +1600,10 @@ packages:
     resolution: {integrity: sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==}
     engines: {node: '>=6'}
 
+  events@3.3.0:
+    resolution: {integrity: sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==}
+    engines: {node: '>=0.8.x'}
+
   execa@7.2.0:
     resolution: {integrity: sha512-UduyVP7TLB5IcAQl+OzLyLcS/l32W/GLg+AhHJ+ow40FOk2U3SAllPwR44v4vmdFwIWqpdwxxpQbF1n5ta9seA==}
     engines: {node: ^14.18.0 || ^16.14.0 || >=18.0.0}
@@ -1754,6 +1811,9 @@ packages:
   ignore@5.3.2:
     resolution: {integrity: sha512-hsBTNUqQTDwkWtcdYI2i06Y/nUBEsNEDJKjWdigLvegy8kDuJAS8uRlpkkcQpyEXL0Z/pjDy5HBmMjRCJ2gq+g==}
     engines: {node: '>= 4'}
+
+  immediate@3.0.6:
+    resolution: {integrity: sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==}
 
   import-fresh@3.3.0:
     resolution: {integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==}
@@ -2003,12 +2063,18 @@ packages:
     resolution: {integrity: sha512-+bT2uH4E5LGE7h/n3evcS/sQlJXCpIp6ym8OWJ5eV6+67Dsql/LaaT7qJBAt2rzfoa/5QBGBhxDix1dMt2kQKQ==}
     engines: {node: '>= 0.8.0'}
 
+  lie@3.1.1:
+    resolution: {integrity: sha512-RiNhHysUjhrDQntfYSfY4MU24coXXdEOgw9WGcKHNeEwffDYbF//u87M1EWaMGzuFoSbqW0C9C6lEEhDOAswfw==}
+
   lilconfig@3.1.3:
     resolution: {integrity: sha512-/vlFKAoH5Cgt3Ie+JLhRbwOsCQePABiU3tJ1egGvyQ+33R/vcwM2Zl2QR/LzjsBeItPt3oSVXapn+m4nQDvpzw==}
     engines: {node: '>=14'}
 
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
+
+  localforage@1.10.0:
+    resolution: {integrity: sha512-14/H1aX7hzBBmmh7sGPd+AOMkkIrHM3Z1PAyGgZigA1H1p5O5ANnMyWzvpAETtG68/dC4pC0ncy3+PPGzXZHPg==}
 
   locate-path@6.0.0:
     resolution: {integrity: sha512-iPZK6eYjbxRu3uB4/WZ3EsEIMJFMqAoopl3R+zuq0UjcAm/MO6KCweDgPfP3elTztoKP3KtnVHxTn2NHBSDVUw==}
@@ -2531,6 +2597,9 @@ packages:
   reflect.getprototypeof@1.0.8:
     resolution: {integrity: sha512-B5dj6usc5dkk8uFliwjwDHM8To5/QwdKz9JcBZ8Ic4G1f0YmeeJTtE/ZTdgRFPAfxZFiUaPhZ1Jcs4qeagItGQ==}
     engines: {node: '>= 0.4'}
+
+  regenerator-runtime@0.14.1:
+    resolution: {integrity: sha512-dYnhHh0nJoMfnkZs6GmmhFknAGRrLznOu5nc9ML+EJxGvrx6H7teuevqVqCuPcPK//3eDrrjQhehXVx9cnkGdw==}
 
   regexp.prototype.flags@1.5.3:
     resolution: {integrity: sha512-vqlC04+RQoFalODCbCumG2xIOvapzVMHwsyIGM/SIE8fRhFFsXeH8/QQ+s0T0kDAhKc4k30s73/0ydkHQz6HlQ==}
@@ -3126,6 +3195,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  '@babel/runtime@7.26.0':
+    dependencies:
+      regenerator-runtime: 0.14.1
+
   '@babel/template@7.25.9':
     dependencies:
       '@babel/code-frame': 7.26.2
@@ -3148,6 +3221,14 @@ snapshots:
     dependencies:
       '@babel/helper-string-parser': 7.25.9
       '@babel/helper-validator-identifier': 7.25.9
+
+  '@daily-co/daily-js@0.72.2':
+    dependencies:
+      '@babel/runtime': 7.26.0
+      '@sentry/browser': 7.120.1
+      bowser: 2.11.0
+      dequal: 2.0.3
+      events: 3.3.0
 
   '@emnapi/runtime@1.3.1':
     dependencies:
@@ -3695,6 +3776,61 @@ snapshots:
 
   '@rushstack/eslint-patch@1.10.4': {}
 
+  '@sentry-internal/feedback@7.120.1':
+    dependencies:
+      '@sentry/core': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry-internal/replay-canvas@7.120.1':
+    dependencies:
+      '@sentry/core': 7.120.1
+      '@sentry/replay': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry-internal/tracing@7.120.1':
+    dependencies:
+      '@sentry/core': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry/browser@7.120.1':
+    dependencies:
+      '@sentry-internal/feedback': 7.120.1
+      '@sentry-internal/replay-canvas': 7.120.1
+      '@sentry-internal/tracing': 7.120.1
+      '@sentry/core': 7.120.1
+      '@sentry/integrations': 7.120.1
+      '@sentry/replay': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry/core@7.120.1':
+    dependencies:
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry/integrations@7.120.1':
+    dependencies:
+      '@sentry/core': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+      localforage: 1.10.0
+
+  '@sentry/replay@7.120.1':
+    dependencies:
+      '@sentry-internal/tracing': 7.120.1
+      '@sentry/core': 7.120.1
+      '@sentry/types': 7.120.1
+      '@sentry/utils': 7.120.1
+
+  '@sentry/types@7.120.1': {}
+
+  '@sentry/utils@7.120.1':
+    dependencies:
+      '@sentry/types': 7.120.1
+
   '@swc/counter@0.1.3': {}
 
   '@swc/helpers@0.5.13':
@@ -3846,6 +3982,11 @@ snapshots:
       eslint-visitor-keys: 4.2.0
 
   '@ungap/structured-clone@1.2.0': {}
+
+  '@vapi-ai/web@2.1.8':
+    dependencies:
+      '@daily-co/daily-js': 0.72.2
+      events: 3.3.0
 
   '@vercel/analytics@1.4.1(next@15.0.4(@babel/core@7.26.0)(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)':
     optionalDependencies:
@@ -4000,6 +4141,8 @@ snapshots:
       buffer: 6.0.3
       inherits: 2.0.4
       readable-stream: 3.6.2
+
+  bowser@2.11.0: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -4548,6 +4691,8 @@ snapshots:
 
   event-target-shim@5.0.1: {}
 
+  events@3.3.0: {}
+
   execa@7.2.0:
     dependencies:
       cross-spawn: 7.0.6
@@ -4794,6 +4939,8 @@ snapshots:
 
   ignore@5.3.2: {}
 
+  immediate@3.0.6: {}
+
   import-fresh@3.3.0:
     dependencies:
       parent-module: 1.0.1
@@ -5024,9 +5171,17 @@ snapshots:
       prelude-ls: 1.2.1
       type-check: 0.4.0
 
+  lie@3.1.1:
+    dependencies:
+      immediate: 3.0.6
+
   lilconfig@3.1.3: {}
 
   lines-and-columns@1.2.4: {}
+
+  localforage@1.10.0:
+    dependencies:
+      lie: 3.1.1
 
   locate-path@6.0.0:
     dependencies:
@@ -5691,6 +5846,8 @@ snapshots:
       get-intrinsic: 1.2.4
       gopd: 1.2.0
       which-builtin-type: 1.2.0
+
+  regenerator-runtime@0.14.1: {}
 
   regexp.prototype.flags@1.5.3:
     dependencies:

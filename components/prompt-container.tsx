@@ -18,6 +18,12 @@ export function PromptContainer() {
 
   // Load saved result from localStorage
   useEffect(() => {
+    // Only clear prompt-related data
+    localStorage.removeItem(STORAGE_KEY);
+    localStorage.removeItem("sales-prompt-form-deleted");
+    localStorage.removeItem("sales-prompt-form-can-undo");
+    
+    // Then load fresh result if exists
     const savedResult = localStorage.getItem(STORAGE_KEY)
     if (savedResult) {
       setResult(savedResult)
@@ -78,7 +84,7 @@ export function PromptContainer() {
     }
   }
 
-  const handleRestoreFormData = (formData: FormValues) => {
+  const handleRestoreFormData = (formData: FormValues | null) => {
     setCurrentFormData(formData)
   }
 
@@ -88,6 +94,7 @@ export function PromptContainer() {
 
   const handleClearPrompt = () => {
     setResult(null)
+    setCurrentFormData(null)
   }
 
   return (
@@ -103,7 +110,7 @@ export function PromptContainer() {
         <GeneratedPrompt 
           prompt={result} 
           isLoading={isLoading}
-          currentFormData={currentFormData || {} as FormValues}
+          currentFormData={currentFormData}
           onRestoreFormData={handleRestoreFormData}
           onRestorePrompt={handleRestorePrompt}
           onClearPrompt={handleClearPrompt}

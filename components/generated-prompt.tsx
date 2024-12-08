@@ -6,6 +6,7 @@ import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { FormValues } from "./prompt-form"
+import { initialize, startCall, endCall } from "@/lib/vapi"; // Assuming vapiClient is imported from here
 
 interface PromptHistoryItem {
   id: string
@@ -17,8 +18,8 @@ interface PromptHistoryItem {
 interface GeneratedPromptProps {
   prompt: string | null
   isLoading: boolean
-  currentFormData: FormValues
-  onRestoreFormData: (formData: FormValues) => void
+  currentFormData: FormValues | null
+  onRestoreFormData: (formData: FormValues | null) => void
   onRestorePrompt: (prompt: string) => void
   onClearPrompt: () => void
   containerHeight: number
@@ -58,7 +59,20 @@ export function GeneratedPrompt({
         id: Math.random().toString(36).substring(7),
         content: prompt,
         timestamp: Date.now(),
-        formData: { ...currentFormData }
+        formData: currentFormData ? { ...currentFormData } : {
+          apiKey: "",
+          vapiKey: "",
+          model: "gpt-4o-mini",
+          aiName: "",
+          companyName: "",
+          industry: "",
+          targetAudience: "",
+          challenges: "",
+          product: "",
+          objective: "",
+          objections: "",
+          additionalInfo: "",
+        }
       }
       setHistory(prev => {
         // Check if this exact prompt is already in history
@@ -118,12 +132,28 @@ export function GeneratedPrompt({
               <div className="absolute right-2 -top-4 flex gap-1">
                 <CallButton 
                   onCall={async () => {
-                    // TODO: Implement call initialization
-                    console.log("Starting call...")
+                    if (!prompt) {
+                      throw new Error('No prompt available');
+                    }
+                    
+                    if (!currentFormData) {
+                      throw new Error('Please fill out the form first');
+                    }
+                    
+                    if (!currentFormData.vapiKey) {
+                      throw new Error('VAPI API key is required. Please enter it in the API Configuration section.');
+                    }
+                    
+                    // Initialize VAPI client with key from form (it will be properly formatted in the client)
+                    await initialize(currentFormData.vapiKey);
+                    
+                    await startCall(prompt, {
+                      assistantName: currentFormData.aiName || 'AI Assistant',
+                      companyName: currentFormData.companyName || 'Company'
+                    });
                   }}
                   onHangup={async () => {
-                    // TODO: Implement call termination
-                    console.log("Ending call...")
+                    await endCall();
                   }}
                 />
                 <CopyButton text={prompt} />

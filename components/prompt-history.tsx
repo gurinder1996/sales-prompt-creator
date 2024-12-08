@@ -11,6 +11,7 @@ import {
 import { FormValues } from "./prompt-form"
 import { CopyButton, DeleteButton, RestoreButton, CallButton } from "./prompt-actions"
 import { Button } from "./ui/button"
+import { initialize, startCall, endCall } from "@/lib/vapi"
 
 interface PromptHistoryItem {
   id: string
@@ -87,12 +88,16 @@ export function PromptHistory({ history, onDelete, onRestore }: PromptHistoryPro
                 <div className="flex gap-1">
                   <CallButton 
                     onCall={async () => {
-                      // TODO: Implement call initialization
-                      console.log("Starting call with history item:", item.id)
+                      // Initialize VAPI with key from form
+                      await initialize(item.formData.vapiKey);
+                      
+                      await startCall(item.content, {
+                        assistantName: item.formData.aiName || 'AI Assistant',
+                        companyName: item.formData.companyName || 'Company'
+                      });
                     }}
                     onHangup={async () => {
-                      // TODO: Implement call termination
-                      console.log("Ending call for history item:", item.id)
+                      await endCall();
                     }}
                   />
                   <CopyButton text={item.content} />
