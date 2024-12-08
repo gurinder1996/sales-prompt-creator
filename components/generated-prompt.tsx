@@ -1,12 +1,10 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
-import { useToast } from "@/hooks/use-toast"
+import { CopyButton, DeleteButton } from "./prompt-actions"
 import ReactMarkdown from "react-markdown"
 import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Copy, X } from "lucide-react"
 import { FormValues } from "./prompt-form"
 
 interface PromptHistoryItem {
@@ -35,7 +33,6 @@ export function GeneratedPrompt({
   onRestorePrompt,
   onClearPrompt
 }: GeneratedPromptProps) {
-  const { toast } = useToast()
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
   const [activeTab, setActiveTab] = useState("current")
 
@@ -72,22 +69,6 @@ export function GeneratedPrompt({
       setActiveTab("current")
     }
   }, [prompt, isLoading, currentFormData])
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text)
-    toast({
-      title: "Copied!",
-      description: "Markdown prompt copied to clipboard",
-    })
-  }
-
-  const deleteHistoryItem = (id: string) => {
-    setHistory(prev => prev.filter(item => item.id !== id))
-    toast({
-      title: "Deleted",
-      description: "Prompt removed from history",
-    })
-  }
 
   const handleRestoreItem = (formData: FormValues, prompt: string) => {
     onRestoreFormData(formData)
@@ -128,30 +109,12 @@ export function GeneratedPrompt({
           </div>
           {prompt && !isLoading && (
             <div className="absolute right-2 -top-4 flex gap-1">
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8 rounded-full border shadow-sm"
-                onClick={() => copyToClipboard(prompt)}
-              >
-                <Copy className="h-4 w-4" />
-                <span className="sr-only">Copy to clipboard</span>
-              </Button>
-              <Button
-                variant="secondary"
-                size="icon"
-                className="h-8 w-8 rounded-full border shadow-sm hover:bg-destructive hover:text-destructive-foreground"
-                onClick={() => {
-                  onClearPrompt()
-                  toast({
-                    title: "Cleared",
-                    description: "Prompt removed from current view",
-                  })
-                }}
-              >
-                <X className="h-4 w-4" />
-                <span className="sr-only">Clear prompt</span>
-              </Button>
+              <CopyButton text={prompt} />
+              <DeleteButton 
+                onDelete={onClearPrompt}
+                deleteMessage="Clear prompt"
+                confirmationMessage="Click to confirm clearing"
+              />
             </div>
           )}
         </div>
@@ -161,7 +124,7 @@ export function GeneratedPrompt({
         {history.length > 0 ? (
           <PromptHistory 
             history={history} 
-            onDelete={deleteHistoryItem} 
+            onDelete={(id: string) => setHistory(prev => prev.filter(item => item.id !== id))}
             onRestore={handleRestoreItem}
           />
         ) : (
