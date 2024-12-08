@@ -118,9 +118,15 @@ export function GeneratedPrompt({
   }, [prompt, isLoading])
 
   const handleRestoreItem = useCallback((item: PromptHistoryItem) => {
-    onRestoreFormData(item.formData)
+    // Preserve current API keys when restoring
+    const restoredFormData = {
+      ...item.formData,
+      apiKey: currentFormData?.apiKey || "",
+      vapiKey: currentFormData?.vapiKey || "",
+    };
+    onRestoreFormData(restoredFormData)
     onRestorePrompt(item.content)
-  }, [onRestoreFormData, onRestorePrompt])
+  }, [onRestoreFormData, onRestorePrompt, currentFormData])
 
   const handleDeleteItem = (id: string) => {
     const updatedHistory = history.filter(item => item.id !== id);
