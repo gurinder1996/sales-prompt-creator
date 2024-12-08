@@ -116,10 +116,7 @@ export function PromptHistory({ history, onDelete }: PromptHistoryProps) {
                 </div>
               </div>
               <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up">
-                <div 
-                  className="border-t bg-white/50 p-4 cursor-pointer"
-                  onClick={() => copyToClipboard(item.content)}
-                >
+                <div className="border-t bg-white/50 p-4">
                   <div className="prose prose-sm max-w-none dark:prose-invert">
                     <ReactMarkdown>{item.content}</ReactMarkdown>
                   </div>
