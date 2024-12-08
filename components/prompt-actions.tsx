@@ -216,7 +216,9 @@ export function CallButton({ buttonId, onCall }: CallButtonProps) {
 
   const getButtonStyles = () => {
     if (callState === 'connecting') {
-      return isThisButtonActive ? "border-primary/50" : ""
+      return isThisButtonActive 
+        ? "border-primary/50 pointer-events-none !cursor-not-allowed opacity-50" 
+        : "pointer-events-none !cursor-not-allowed opacity-50"
     }
 
     switch (callState as CallState) {
@@ -255,7 +257,7 @@ export function CallButton({ buttonId, onCall }: CallButtonProps) {
             className={cn(baseButtonStyles, getButtonStyles())}
             onMouseEnter={() => setTooltipOpen(true)}
             onMouseLeave={() => setTooltipOpen(false)}
-            disabled={callState !== 'idle' && !isThisButtonActive}
+            disabled={callState === 'connecting' || (callState !== 'idle' && !isThisButtonActive)}
           >
             {getButtonContent()}
             <span className="sr-only">{getTooltipContent()}</span>
