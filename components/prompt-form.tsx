@@ -361,7 +361,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-8 bg-white rounded-lg border p-6">
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-8 bg-white rounded-lg border p-6">
         <div className="space-y-4">
           <Collapsible
             open={isApiOpen}
@@ -612,10 +612,23 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
 
         <div className="flex gap-2">
           <Button 
-            type="submit" 
+            type="button" 
             className="flex-1"
             disabled={isLoading}
             size="lg"
+            onClick={() => {
+              const apiKey = form.getValues("apiKey")
+              if (!apiKey) {
+                toast({
+                  title: "OpenAI API Key Required",
+                  description: "Please check your OpenAI API key in the API Configuration section",
+                  variant: "destructive",
+                })
+                setIsApiOpen(true)
+                return
+              }
+              form.handleSubmit(handleSubmit)()
+            }}
           >
             {isLoading ? "Generating..." : "Generate Prompt"}
           </Button>

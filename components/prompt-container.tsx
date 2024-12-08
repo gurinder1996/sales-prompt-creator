@@ -72,6 +72,9 @@ export function PromptContainer() {
   }, [result])
 
   const handleSubmit = async (values: FormValues) => {
+    if (!values.apiKey) {
+      return false
+    }
     setIsLoading(true)
     setCurrentFormData(values)
     try {
