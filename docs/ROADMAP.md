@@ -1,97 +1,99 @@
-# VAPI Integration Roadmap
+# Call State Management Roadmap
 
-## Milestone 1: API Key Management
-Add VAPI API key input alongside existing OpenAI key input.
+## Current Issues
+1. **Decentralized Call State**
+   - Each CallButton maintains independent state
+   - No global awareness of call status
+   - Multiple buttons can try to initiate calls simultaneously
 
-### Tasks:
-1. Update `components/prompt-form.tsx` to include VAPI key input
-   - Add new input field with identical styling
-   - Match validation patterns
-   - Add appropriate labels
-2. Extend localStorage handling
-   - Add new key: 'vapi-api-key'
-   - Maintain same update frequency
-   - Match encryption/security patterns
-3. Update API key validation logic
-4. Test persistence and validation
+2. **Race Conditions**
+   - Multiple "connecting" states can occur at once
+   - isCallActive check happens after button state changes
+   - No atomic state transitions
 
-## Milestone 2: Call Control Component
-Create new CallButton component for prompt actions.
+3. **Inconsistent State Recovery**
+   - Error states are isolated to individual buttons
+   - Other buttons remain unaware of failed calls
+   - No global error recovery mechanism
 
-### Tasks:
-1. Add new call button to `components/prompt-actions.tsx`
-   - Match existing button styling
-   - Implement state management
-   - Add tooltips
-2. Add call state indicators
-   - Idle state
-   - Loading state
-   - Active call state
-   - Error state
-3. Add error handling
-4. Test component in isolation
+## Proposed Solution
 
-## Milestone 3: History Integration
-Add CallButton to prompt history rows.
+### 1. Create Global Call State Manager
+```typescript
+type CallState = 'idle' | 'connecting' | 'active' | 'error';
 
-### Tasks:
-1. Update `components/prompt-history.tsx`
-   - Add CallButton to action row
-   - Position left of existing buttons
-2. Handle state management
-3. Test integration
-4. Verify mobile layout
+interface CallStateManager {
+  state: CallState;
+  currentCallId: string | null;
+  error: Error | null;
+  activeButtonId: string | null;
+}
+```
 
-## Milestone 4: Generated Prompt Integration
-Add CallButton to generated prompt pane.
+### 2. Implement State Management Functions
+```typescript
+interface CallStateActions {
+  initiateCall: (buttonId: string) => Promise<boolean>;
+  endCall: (buttonId: string) => Promise<void>;
+  handleError: (error: Error) => void;
+  resetState: () => void;
+}
+```
 
-### Tasks:
-1. Update `components/generated-prompt.tsx`
-   - Add CallButton to action row
-   - Position left of existing buttons
-2. Handle state management
-3. Test integration
-4. Verify mobile layout
+### 3. Create React Context Provider
+- Wrap app with CallStateProvider
+- Expose state and actions via hooks
+- Ensure atomic state updates
+- Implement state persistence if needed
 
-## Milestone 5: VAPI Integration Library
-Create library for managing VAPI calls.
+### 4. Modify CallButton Component
+- Remove local state management
+- Connect to global call state
+- Use buttonId for tracking active button
+- Handle state transitions through manager
 
-### Requirements from VAPI:
-1. API Documentation
-   - Authentication methods
-   - WebSocket/WebRTC setup
-   - Call initialization
-   - Audio stream handling
-2. Example Code
-   - Call initialization
-   - Error handling
-   - State management
-3. Additional Context Needed
-   - Browser compatibility requirements
-   - Rate limiting details
-   - Error codes and meanings
-   - Call quality requirements
+### 5. Update Vapi Client Integration
+- Move client initialization to state manager
+- Ensure proper cleanup on state changes
+- Add connection timeout handling
+- Implement retry mechanism
 
-### Tasks:
-1. Create `lib/vapi.ts`
-   - Initialize VAPI client
-   - Handle authentication
-   - Manage call lifecycle
-2. Add error handling
-3. Add TypeScript types
-4. Create test suite
+## Implementation Steps
 
-## Testing & Quality Assurance
-- Unit tests for new components
-- Integration tests for API key management
-- End-to-end tests for call functionality
-- Mobile responsiveness verification
-- Cross-browser testing
-- Error scenario testing
+1. **Phase 1: Core State Management**
+   - [ ] Create CallStateManager class
+   - [ ] Implement state transitions
+   - [ ] Add error handling
+   - [ ] Create React context
 
-## Future Enhancements
-- Call quality monitoring
-- Call history
-- Analytics integration
-- Advanced error recovery
-- Mobile-specific optimizations
+2. **Phase 2: Button Integration**
+   - [ ] Update CallButton component
+   - [ ] Add unique button IDs
+   - [ ] Connect to global state
+   - [ ] Update UI based on global state
+
+3. **Phase 3: Vapi Integration**
+   - [ ] Move Vapi client to state manager
+   - [ ] Add connection timeouts
+   - [ ] Implement retry logic
+   - [ ] Handle cleanup
+
+4. **Phase 4: Error Recovery**
+   - [ ] Add global error handling
+   - [ ] Implement recovery mechanisms
+   - [ ] Add user feedback
+   - [ ] Test edge cases
+
+## Success Criteria
+1. Only one call can be active at any time
+2. All buttons reflect current global state
+3. Failed calls are properly cleaned up
+4. Users receive clear feedback
+5. No stuck states or race conditions
+
+## Testing Scenarios
+1. Rapid button clicks
+2. Network failures
+3. API key changes
+4. Browser refresh
+5. Concurrent history item calls
