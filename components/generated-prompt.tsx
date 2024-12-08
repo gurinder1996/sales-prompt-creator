@@ -78,7 +78,7 @@ export function GeneratedPrompt({
 
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-1">
         <TabsList>
           <TabsTrigger value="current">Current</TabsTrigger>
           <TabsTrigger value="history" className="relative">
@@ -93,7 +93,7 @@ export function GeneratedPrompt({
       </div>
 
       <TabsContent value="current" className="mt-0">
-        <div className="relative mt-4">
+        <div className="relative mt-1">
           {isLoading ? (
             <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
               <div className="flex items-center justify-center">

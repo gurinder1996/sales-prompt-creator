@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react"
 import { PromptForm } from "@/components/prompt-form"
+import { type FormValues } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
 import { GeneratedPrompt } from "@/components/generated-prompt"
 
