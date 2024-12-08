@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
 import * as z from "zod"
@@ -17,10 +17,17 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Separator } from "@/components/ui/separator"
 import { useToast } from "@/hooks/use-toast"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 const formSchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
-  model: z.string().default("gpt-4o-mini"),
+  model: z.string().min(1, "Model selection is required"),
   aiName: z.string().min(1, "AI name is required"),
   companyName: z.string().min(1, "Company name is required"),
   industry: z.string().min(1, "Industry is required"),
@@ -43,6 +50,11 @@ const STORAGE_KEY = "sales-prompt-form"
 
 export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
+  const [models, setModels] = useState<Array<{ id: string }>>([
+    { id: "gpt-4o-mini" },
+    { id: "gpt-4o" }
+  ])
+  const [isLoadingModels, setIsLoadingModels] = useState(false)
   const { toast } = useToast()
 
   const form = useForm<FormValues>({
@@ -83,25 +95,86 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
     setMounted(true)
   }, [form])
 
+  // Fetch available models only when API key is valid
+  const fetchModels = useCallback(async (apiKey: string) => {
+    if (!apiKey || !mounted || typeof window === 'undefined') return
+
+    setIsLoadingModels(true)
+    try {
+      const { OpenAI } = await import('openai')
+      const openai = new OpenAI({ 
+        apiKey,
+        dangerouslyAllowBrowser: true // Required for client-side only architecture
+      })
+      const modelList = await openai.models.list()
+      // Ensure our default models are always included
+      const defaultModels = ["gpt-4o-mini", "gpt-4o"]
+      const allModels = Array.from(modelList.data)
+      const filteredModels = allModels.filter(model => !defaultModels.includes(model.id))
+      setModels([
+        { id: "gpt-4o-mini" },
+        { id: "gpt-4o" },
+        ...filteredModels
+      ])
+    } catch (error) {
+      console.error("Failed to fetch models:", error)
+      toast({
+        title: "Failed to load models",
+        description: "Using default models only. Please check your API key.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoadingModels(false)
+    }
+  }, [mounted, toast])
+
+  // Watch for API key changes
+  const apiKey = form.watch("apiKey")
+  useEffect(() => {
+    if (mounted && apiKey?.length >= 30) {
+      const timer = setTimeout(() => {
+        fetchModels(apiKey)
+      }, 500) // Debounce API key changes
+      return () => clearTimeout(timer)
+    }
+  }, [apiKey, mounted, fetchModels])
+
+  // Debounced save function
+  const debouncedSave = useCallback(
+    (() => {
+      let timeoutId: NodeJS.Timeout | null = null;
+      return (formData: FormValues) => {
+        if (timeoutId) {
+          clearTimeout(timeoutId);
+        }
+        timeoutId = setTimeout(() => {
+          const dataToSave = {
+            model: formData.model,
+            aiName: formData.aiName,
+            companyName: formData.companyName,
+            industry: formData.industry,
+            targetAudience: formData.targetAudience,
+            challenges: formData.challenges,
+            product: formData.product,
+            objective: formData.objective,
+            objections: formData.objections,
+            additionalInfo: formData.additionalInfo,
+          }
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+          timeoutId = null;
+        }, 300);
+      };
+    })(),
+    []
+  );
+
   // Save form data to localStorage when it changes
   useEffect(() => {
     if (mounted) {
       const formData = form.getValues()
-      const dataToSave = {
-        model: formData.model,
-        aiName: formData.aiName,
-        companyName: formData.companyName,
-        industry: formData.industry,
-        targetAudience: formData.targetAudience,
-        challenges: formData.challenges,
-        product: formData.product,
-        objective: formData.objective,
-        objections: formData.objections,
-        additionalInfo: formData.additionalInfo,
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+      debouncedSave(formData)
     }
-  }, [form.watch(), mounted])
+  }, [form.watch(), mounted, debouncedSave])
 
   const handleSubmit = (values: FormValues) => {
     if (mounted) {
@@ -162,10 +235,29 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
                   control={form.control}
                   name="model"
                   render={({ field }) => (
-                    <FormItem className="flex-shrink-0">
-                      <FormControl>
-                        <Input disabled className="w-32 text-xs bg-muted/50" {...field} />
-                      </FormControl>
+                    <FormItem>
+                      <FormLabel>Model</FormLabel>
+                      <Select onValueChange={field.onChange} value={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select a model" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {isLoadingModels ? (
+                            <SelectItem value="loading" disabled>
+                              Loading models...
+                            </SelectItem>
+                          ) : (
+                            models.map((model) => (
+                              <SelectItem key={model.id} value={model.id}>
+                                {model.id}
+                              </SelectItem>
+                            ))
+                          )}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
                     </FormItem>
                   )}
                 />
