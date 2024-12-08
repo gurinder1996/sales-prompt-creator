@@ -39,6 +39,11 @@ export function GeneratedPrompt({
 }: GeneratedPromptProps) {
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
   const [activeTab, setActiveTab] = useState("current")
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   // Load history and current prompt from localStorage
   useEffect(() => {
@@ -52,22 +57,6 @@ export function GeneratedPrompt({
       onRestorePrompt(savedPrompt)
     }
   }, [onRestorePrompt])
-
-  // Save history to localStorage
-  useEffect(() => {
-    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
-  }, [history])
-
-  // Save current prompt to localStorage
-  useEffect(() => {
-    if (!isLoading) {
-      if (prompt) {
-        localStorage.setItem(CURRENT_PROMPT_KEY, prompt)
-      } else {
-        localStorage.removeItem(CURRENT_PROMPT_KEY)
-      }
-    }
-  }, [prompt, isLoading])
 
   // Add new prompt to history
   useEffect(() => {
@@ -96,17 +85,37 @@ export function GeneratedPrompt({
           additionalInfo: "",
         }
       }
-      setHistory(prev => {
-        // Check if this exact prompt is already in history
-        if (!prev.some(item => item.content === prompt)) {
-          return [newItem, ...prev]
-        }
-        return prev
-      })
+
+      // Only add to history if not already present
+      const existingItemIndex = history.findIndex(item => item.content === prompt);
+      if (existingItemIndex === -1) {
+        const updatedHistory = [newItem, ...history];
+        setHistory(updatedHistory);
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
+      }
+      
       // Switch to current tab when new prompt is generated
       setActiveTab("current")
     }
-  }, [prompt, isLoading, currentFormData])
+  }, [prompt, isLoading, currentFormData, history])
+
+  // Save history to localStorage whenever it changes
+  useEffect(() => {
+    if (mounted && history.length > 0) {
+      localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
+    }
+  }, [history, mounted])
+
+  // Save current prompt to localStorage
+  useEffect(() => {
+    if (!isLoading) {
+      if (prompt) {
+        localStorage.setItem(CURRENT_PROMPT_KEY, prompt)
+      } else {
+        localStorage.removeItem(CURRENT_PROMPT_KEY)
+      }
+    }
+  }, [prompt, isLoading])
 
   const handleRestoreItem = useCallback((item: PromptHistoryItem) => {
     onRestoreFormData(item.formData)
@@ -114,7 +123,9 @@ export function GeneratedPrompt({
   }, [onRestoreFormData, onRestorePrompt])
 
   const handleDeleteItem = (id: string) => {
-    setHistory(prev => prev.filter(item => item.id !== id))
+    const updatedHistory = history.filter(item => item.id !== id);
+    setHistory(updatedHistory);
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
   }
 
   return (
@@ -184,10 +195,11 @@ export function GeneratedPrompt({
                   <CopyButton text={prompt} />
                   <DeleteButton 
                     onDelete={() => {
-                      localStorage.removeItem(CURRENT_PROMPT_KEY)
-                      onClearPrompt()
+                      // Only clear the current prompt, don't affect history
+                      localStorage.removeItem(CURRENT_PROMPT_KEY);
+                      onClearPrompt();
                     }}
-                    deleteMessage="Clear prompt"
+                    deleteMessage="Clear current prompt"
                     confirmationMessage="Click to confirm clearing"
                   />
                 </div>
