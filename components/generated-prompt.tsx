@@ -93,22 +93,22 @@ export function GeneratedPrompt({
       </div>
 
       <div className="flex-1 min-h-0 relative">
-        <TabsContent value="current" className="absolute inset-0">
-          <div className="relative h-full flex flex-col">
+        <TabsContent value="current" className="absolute inset-0 flex">
+          <div className="relative w-full">
             {isLoading ? (
-              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert h-full">
+              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
                 <div className="flex items-center justify-center">
                   <div className="h-4 w-4 animate-spin rounded-full border-b-2 border-gray-900" />
                 </div>
               </div>
             ) : prompt ? (
-              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert flex flex-col h-full">
-                <div className="overflow-auto flex-1">
+              <div className="prose prose-sm max-w-none rounded-md border bg-white/50 p-4 dark:prose-invert">
+                <div className="max-h-full overflow-auto">
                   <ReactMarkdown>{prompt}</ReactMarkdown>
                 </div>
               </div>
             ) : (
-              <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground h-full">
+              <div className="rounded-lg border bg-white p-6 text-sm text-center text-muted-foreground">
                 Your generated prompt will appear here.
               </div>
             )}
