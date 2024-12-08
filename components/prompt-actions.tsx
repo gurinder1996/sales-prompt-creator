@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
-import { Copy, Trash2, RotateCcw } from "lucide-react"
+import { Copy, Trash2, RotateCcw, Phone, PhoneOff, Loader2 } from "lucide-react"
 import { useState, useCallback } from "react"
 import {
   Tooltip,
@@ -21,15 +21,19 @@ interface ActionButtonProps {
 }
 
 function ActionButton({ onClick, className, children, tooltipContent }: ActionButtonProps) {
+  const [open, setOpen] = useState(false)
+  
   return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={open} onOpenChange={setOpen}>
         <TooltipTrigger asChild>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClick}
             className={`${baseButtonStyles} ${className}`}
+            onMouseEnter={() => setOpen(true)}
+            onMouseLeave={() => setOpen(false)}
           >
             {children}
           </Button>
@@ -61,23 +65,14 @@ export function CopyButton({ text, onCopy }: CopyButtonProps) {
   }, [text, toast, onCopy])
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ActionButton
-            onClick={handleCopy}
-            className="text-muted-foreground hover:text-primary hover:border-primary/50"
-            tooltipContent="Copy to clipboard"
-          >
-            <Copy className="h-4 w-4" />
-            <span className="sr-only">Copy to clipboard</span>
-          </ActionButton>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>Copy to clipboard</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <ActionButton
+      onClick={handleCopy}
+      className="text-muted-foreground hover:text-primary hover:border-primary/50"
+      tooltipContent="Copy to clipboard"
+    >
+      <Copy className="h-4 w-4" />
+      <span className="sr-only">Copy to clipboard</span>
+    </ActionButton>
   )
 }
 
@@ -113,27 +108,18 @@ export function DeleteButton({
   }, [confirmation, onDelete, toast])
 
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <ActionButton
-            onClick={handleDelete}
-            className={confirmation 
-              ? "bg-destructive text-white border-destructive hover:bg-destructive hover:text-white hover:border-destructive" 
-              : "text-muted-foreground hover:text-destructive hover:border-destructive"}
-            tooltipContent={confirmation ? confirmationMessage : deleteMessage}
-          >
-            <Trash2 className="h-4 w-4" />
-            <span className="sr-only">
-              {confirmation ? confirmationMessage : deleteMessage}
-            </span>
-          </ActionButton>
-        </TooltipTrigger>
-        <TooltipContent>
-          <p>{confirmation ? confirmationMessage : deleteMessage}</p>
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <ActionButton
+      onClick={handleDelete}
+      className={confirmation 
+        ? "bg-destructive text-white border-destructive hover:bg-destructive hover:text-white hover:border-destructive" 
+        : "text-muted-foreground hover:text-destructive hover:border-destructive"}
+      tooltipContent={confirmation ? confirmationMessage : deleteMessage}
+    >
+      <Trash2 className="h-4 w-4" />
+      <span className="sr-only">
+        {confirmation ? confirmationMessage : deleteMessage}
+      </span>
+    </ActionButton>
   )
 }
 
@@ -154,20 +140,115 @@ export function RestoreButton({ onRestore }: RestoreButtonProps) {
   }, [onRestore, toast])
 
   return (
+    <ActionButton
+      onClick={handleRestore}
+      className="text-muted-foreground hover:text-emerald-600 hover:border-emerald-600/50"
+      tooltipContent="Restore this prompt"
+    >
+      <RotateCcw className="h-4 w-4" />
+      <span className="sr-only">Restore form data</span>
+    </ActionButton>
+  )
+}
+
+interface CallButtonProps {
+  onCall?: () => Promise<void>
+  onHangup?: () => Promise<void>
+}
+
+type CallState = 'idle' | 'connecting' | 'active' | 'error';
+
+export function CallButton({ onCall, onHangup }: CallButtonProps) {
+  const [callState, setCallState] = useState<CallState>('idle')
+  const [tooltipOpen, setTooltipOpen] = useState(false)
+  const { toast } = useToast()
+
+  const handleToggleCall = useCallback(async (e: React.MouseEvent) => {
+    e.stopPropagation()
+    setTooltipOpen(false)  // Hide tooltip during state change
+    
+    try {
+      if (callState === 'idle') {
+        setCallState('connecting')
+        await onCall?.()
+        setCallState('active')
+      } else if (callState === 'active') {
+        await onHangup?.()
+        setCallState('idle')
+      } else if (callState === 'error') {
+        setCallState('connecting')
+        await onCall?.()
+        setCallState('active')
+      }
+    } catch (error) {
+      setCallState('error')
+      toast({
+        title: "Call Error",
+        description: error instanceof Error ? error.message : "Failed to manage call",
+        variant: "destructive",
+      })
+    }
+    
+    // Show tooltip with new state after a brief delay
+    setTimeout(() => setTooltipOpen(true), 100)
+  }, [callState, onCall, onHangup, toast])
+
+  const getButtonContent = () => {
+    switch (callState) {
+      case 'connecting':
+        return <Loader2 className="h-4 w-4 animate-spin" />
+      case 'active':
+        return <PhoneOff className="h-4 w-4" />
+      case 'error':
+        return <Phone className="h-4 w-4 text-destructive" />
+      default:
+        return <Phone className="h-4 w-4" />
+    }
+  }
+
+  const getTooltipContent = () => {
+    switch (callState) {
+      case 'connecting':
+        return "Connecting call..."
+      case 'active':
+        return "End call"
+      case 'error':
+        return "Retry call"
+      default:
+        return "Start call"
+    }
+  }
+
+  const getButtonStyles = () => {
+    const baseStyles = "text-muted-foreground hover:text-primary hover:border-primary/50"
+    switch (callState) {
+      case 'active':
+        return `${baseStyles} text-primary border-primary/50`
+      case 'error':
+        return `${baseStyles} text-destructive hover:text-destructive hover:border-destructive/50`
+      default:
+        return baseStyles
+    }
+  }
+
+  return (
     <TooltipProvider>
-      <Tooltip>
+      <Tooltip open={tooltipOpen} onOpenChange={setTooltipOpen}>
         <TooltipTrigger asChild>
-          <ActionButton
-            onClick={handleRestore}
-            className="text-muted-foreground hover:text-emerald-600 hover:border-emerald-600/50"
-            tooltipContent="Restore this prompt"
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleToggleCall}
+            className={`${baseButtonStyles} ${getButtonStyles()}`}
+            onMouseEnter={() => setTooltipOpen(true)}
+            onMouseLeave={() => setTooltipOpen(false)}
           >
-            <RotateCcw className="h-4 w-4" />
-            <span className="sr-only">Restore form data</span>
-          </ActionButton>
+            {getButtonContent()}
+            <span className="sr-only">{getTooltipContent()}</span>
+          </Button>
         </TooltipTrigger>
         <TooltipContent>
-          <p>Restore this prompt</p>
+          <p>{getTooltipContent()}</p>
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

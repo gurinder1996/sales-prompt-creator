@@ -1,6 +1,6 @@
 "use client"
 
-import { CopyButton, DeleteButton } from "./prompt-actions"
+import { CopyButton, DeleteButton, CallButton } from "./prompt-actions"
 import ReactMarkdown from "react-markdown"
 import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
@@ -116,6 +116,16 @@ export function GeneratedPrompt({
             )}
             {prompt && !isLoading && (
               <div className="absolute right-2 -top-4 flex gap-1">
+                <CallButton 
+                  onCall={async () => {
+                    // TODO: Implement call initialization
+                    console.log("Starting call...")
+                  }}
+                  onHangup={async () => {
+                    // TODO: Implement call termination
+                    console.log("Ending call...")
+                  }}
+                />
                 <CopyButton text={prompt} />
                 <DeleteButton 
                   onDelete={onClearPrompt}
