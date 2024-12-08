@@ -161,6 +161,10 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
             additionalInfo: formData.additionalInfo,
           }
           localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave))
+          // Also save API key with the same debounce timing
+          if (formData.apiKey) {
+            localStorage.setItem("openai-api-key", formData.apiKey)
+          }
           timeoutId = null;
         }, 300);
       };
@@ -177,9 +181,6 @@ export function PromptForm({ onSubmit, isLoading = false }: PromptFormProps) {
   }, [form.watch(), mounted, debouncedSave])
 
   const handleSubmit = (values: FormValues) => {
-    if (mounted) {
-      localStorage.setItem("openai-api-key", values.apiKey)
-    }
     onSubmit(values)
   }
 
