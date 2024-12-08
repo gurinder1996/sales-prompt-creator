@@ -25,6 +25,8 @@ export function PromptContainer() {
   useEffect(() => {
     if (result) {
       localStorage.setItem(STORAGE_KEY, result)
+    } else {
+      localStorage.removeItem(STORAGE_KEY)
     }
   }, [result])
 
@@ -49,6 +51,10 @@ export function PromptContainer() {
     setResult(prompt)
   }
 
+  const handleClearPrompt = () => {
+    setResult(null)
+  }
+
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2">
       <div>
@@ -65,6 +71,7 @@ export function PromptContainer() {
           currentFormData={currentFormData || {} as FormValues}
           onRestoreFormData={handleRestoreFormData}
           onRestorePrompt={handleRestorePrompt}
+          onClearPrompt={handleClearPrompt}
         />
       </div>
     </div>

@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown"
 import { useEffect, useState } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Copy } from "lucide-react"
+import { Copy, X } from "lucide-react"
 import { FormValues } from "./prompt-form"
 
 interface PromptHistoryItem {
@@ -22,6 +22,7 @@ interface GeneratedPromptProps {
   currentFormData: FormValues
   onRestoreFormData: (formData: FormValues) => void
   onRestorePrompt: (prompt: string) => void
+  onClearPrompt: () => void
 }
 
 const HISTORY_STORAGE_KEY = "prompt-history"
@@ -31,7 +32,8 @@ export function GeneratedPrompt({
   isLoading, 
   currentFormData,
   onRestoreFormData,
-  onRestorePrompt
+  onRestorePrompt,
+  onClearPrompt
 }: GeneratedPromptProps) {
   const { toast } = useToast()
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
@@ -125,15 +127,32 @@ export function GeneratedPrompt({
             )}
           </div>
           {prompt && !isLoading && (
-            <Button
-              variant="secondary"
-              size="icon"
-              className="absolute right-2 -top-4 h-8 w-8 rounded-full border shadow-sm"
-              onClick={() => copyToClipboard(prompt)}
-            >
-              <Copy className="h-4 w-4" />
-              <span className="sr-only">Copy to clipboard</span>
-            </Button>
+            <div className="absolute right-2 -top-4 flex gap-1">
+              <Button
+                variant="secondary"
+                size="icon"
+                className="h-8 w-8 rounded-full border shadow-sm"
+                onClick={() => copyToClipboard(prompt)}
+              >
+                <Copy className="h-4 w-4" />
+                <span className="sr-only">Copy to clipboard</span>
+              </Button>
+              <Button
+                variant="secondary"
+                size="icon"
+                className="h-8 w-8 rounded-full border shadow-sm hover:bg-destructive hover:text-destructive-foreground"
+                onClick={() => {
+                  onClearPrompt()
+                  toast({
+                    title: "Cleared",
+                    description: "Prompt removed from current view",
+                  })
+                }}
+              >
+                <X className="h-4 w-4" />
+                <span className="sr-only">Clear prompt</span>
+              </Button>
+            </div>
           )}
         </div>
       </TabsContent>
