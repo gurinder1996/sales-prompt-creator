@@ -26,6 +26,7 @@ interface GeneratedPromptProps {
 }
 
 const HISTORY_STORAGE_KEY = "prompt-history"
+const CURRENT_PROMPT_KEY = "current-prompt"
 
 export function GeneratedPrompt({ 
   prompt, 
@@ -39,18 +40,34 @@ export function GeneratedPrompt({
   const [history, setHistory] = useState<PromptHistoryItem[]>([])
   const [activeTab, setActiveTab] = useState("current")
 
-  // Load history from localStorage
+  // Load history and current prompt from localStorage
   useEffect(() => {
     const savedHistory = localStorage.getItem(HISTORY_STORAGE_KEY)
     if (savedHistory) {
       setHistory(JSON.parse(savedHistory))
     }
-  }, [])
+
+    const savedPrompt = localStorage.getItem(CURRENT_PROMPT_KEY)
+    if (savedPrompt && !prompt) {
+      onRestorePrompt(savedPrompt)
+    }
+  }, [onRestorePrompt])
 
   // Save history to localStorage
   useEffect(() => {
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(history))
   }, [history])
+
+  // Save current prompt to localStorage
+  useEffect(() => {
+    if (!isLoading) {
+      if (prompt) {
+        localStorage.setItem(CURRENT_PROMPT_KEY, prompt)
+      } else {
+        localStorage.removeItem(CURRENT_PROMPT_KEY)
+      }
+    }
+  }, [prompt, isLoading])
 
   // Add new prompt to history
   useEffect(() => {
@@ -166,7 +183,10 @@ export function GeneratedPrompt({
                   />
                   <CopyButton text={prompt} />
                   <DeleteButton 
-                    onDelete={onClearPrompt}
+                    onDelete={() => {
+                      localStorage.removeItem(CURRENT_PROMPT_KEY)
+                      onClearPrompt()
+                    }}
                     deleteMessage="Clear prompt"
                     confirmationMessage="Click to confirm clearing"
                   />
