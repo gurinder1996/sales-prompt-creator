@@ -98,24 +98,7 @@ export function PromptContainer() {
   }
 
   const handleClearPrompt = () => {
-    // Preserve API keys from current form data
-    const preservedData = currentFormData ? {
-      model: "gpt-4o-mini",
-      aiName: "",
-      companyName: "",
-      industry: "",
-      targetAudience: "",
-      challenges: "",
-      product: "",
-      objective: "",
-      objections: "",
-      additionalInfo: "",
-      apiKey: currentFormData.apiKey,
-      vapiKey: currentFormData.vapiKey,
-    } : null;
-    
     setResult(null);
-    setCurrentFormData(preservedData);
   }
 
   return (
