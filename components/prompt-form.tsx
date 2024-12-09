@@ -29,7 +29,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Lock, Unlock, HelpCircle } from "lucide-react"
+import { ChevronDown, HelpCircle } from "lucide-react"
 import {
   Tooltip,
   TooltipContent,
@@ -404,11 +404,9 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
               <div className="flex gap-2 items-center">
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="w-9 p-0">
-                    {isApiOpen ? (
-                      <Unlock className="h-4 w-4 transition-all" />
-                    ) : (
-                      <Lock className="h-4 w-4 transition-all" />
-                    )}
+                    <ChevronDown className={`h-4 w-4 transition-transform duration-200 ${
+                      !isApiOpen ? "" : "rotate-180"
+                    }`} />
                     <span className="sr-only">Toggle API configuration</span>
                   </Button>
                 </CollapsibleTrigger>
@@ -429,8 +427,8 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
                 </div>
               </div>
             </div>
-            <CollapsibleContent className="space-y-2">
-              <div className="flex gap-4">
+            <CollapsibleContent className="data-[state=open]:animate-collapsible-down data-[state=closed]:animate-collapsible-up overflow-hidden">
+              <div className="flex gap-4 bg-background p-0.5">
                 <FormField
                   control={form.control}
                   name="apiKey"
