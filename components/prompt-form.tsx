@@ -270,12 +270,27 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
   // Handle restored form data
   useEffect(() => {
     if (restoredFormData && mounted) {
-      form.reset(restoredFormData)
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(restoredFormData))
+      // Get current API keys before reset
+      const currentApiKeys = {
+        apiKey: form.getValues("apiKey"),
+        vapiKey: form.getValues("vapiKey")
+      };
+
+      // Reset form with merged data
+      form.reset({
+        ...restoredFormData,
+        apiKey: currentApiKeys.apiKey,
+        vapiKey: currentApiKeys.vapiKey
+      });
+
+      // Save to localStorage without API keys
+      const { apiKey, vapiKey, ...dataToSave } = restoredFormData;
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+      
       // Clear undo state when restoring from history
-      setCanUndo(false)
-      localStorage.setItem(UNDO_STATE_KEY, "false")
-      localStorage.removeItem(DELETED_DATA_KEY)
+      setCanUndo(false);
+      localStorage.setItem(UNDO_STATE_KEY, "false");
+      localStorage.removeItem(DELETED_DATA_KEY);
     }
   }, [restoredFormData, form, mounted])
 
