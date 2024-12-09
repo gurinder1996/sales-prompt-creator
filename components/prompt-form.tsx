@@ -32,8 +32,6 @@ import {
 import { Lock, Unlock } from "lucide-react"
 
 const formSchema = z.object({
-  apiKey: z.string().min(1, "OpenAI API key is required"),
-  vapiKey: z.string().optional(),
   model: z.string().min(1, "Model selection is required"),
   aiName: z.string().min(1, "AI name is required"),
   companyName: z.string().min(1, "Company name is required"),
@@ -46,13 +44,19 @@ const formSchema = z.object({
   additionalInfo: z.string().optional(),
 })
 
+const apiKeySchema = z.object({
+  apiKey: z.string().min(1, "OpenAI API key is required"),
+  vapiKey: z.string().optional(),
+})
+
 export type FormValues = z.infer<typeof formSchema>
+export type ApiKeyValues = z.infer<typeof apiKeySchema>
 
 interface PromptFormProps {
-  onSubmit: (values: FormValues) => void
+  onSubmit: (values: FormValues & ApiKeyValues) => void
   isLoading?: boolean
-  restoredFormData: FormValues | null
-  onFormDataLoad?: (values: FormValues) => void
+  restoredFormData: FormValues & ApiKeyValues | null
+  onFormDataLoad?: (values: FormValues & ApiKeyValues) => void
 }
 
 const STORAGE_KEY = "sales-prompt-form"
@@ -85,8 +89,8 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
     }
   }, [isApiOpen, mounted])
 
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<FormValues & ApiKeyValues>({
+    resolver: zodResolver(z.intersection(formSchema, apiKeySchema)),
     defaultValues: {
       model: "gpt-4o-mini",
       apiKey: "",
@@ -116,7 +120,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
       const parsedData = JSON.parse(savedFormData)
       Object.entries(parsedData).forEach(([key, value]) => {
         if (key !== "apiKey" && key !== "vapiKey") {
-          form.setValue(key as keyof FormValues, value as string)
+          form.setValue(key as keyof (FormValues & ApiKeyValues), value as string)
         }
       })
     }
@@ -192,7 +196,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
   const debouncedSave = useCallback(
     (() => {
       let timeoutId: NodeJS.Timeout | null = null;
-      return (formData: FormValues) => {
+      return (formData: FormValues & ApiKeyValues) => {
         if (timeoutId) {
           clearTimeout(timeoutId);
         }
@@ -275,7 +279,7 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
     }
   }, [restoredFormData, form, mounted])
 
-  const handleSubmit = (values: FormValues) => {
+  const handleSubmit = (values: FormValues & ApiKeyValues) => {
     onSubmit(values)
   }
 

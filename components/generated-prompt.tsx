@@ -6,20 +6,20 @@ import ReactMarkdown from "react-markdown"
 import { useEffect, useState, useCallback } from "react"
 import { PromptHistory } from "./prompt-history"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { FormValues } from "./prompt-form"
+import { FormValues, ApiKeyValues } from "./prompt-form"
 
 interface PromptHistoryItem {
   id: string
   content: string
   timestamp: number
-  formData: FormValues
+  formData: Omit<FormValues, keyof ApiKeyValues>
 }
 
 interface GeneratedPromptProps {
   prompt: string | null
   isLoading: boolean
-  currentFormData: FormValues | null
-  onRestoreFormData: (formData: FormValues | null) => void
+  currentFormData: (FormValues & ApiKeyValues) | null
+  onRestoreFormData: (formData: FormValues & ApiKeyValues) => void
   onRestorePrompt: (prompt: string) => void
   onClearPrompt: () => void
   containerHeight: number
@@ -66,13 +66,17 @@ export function GeneratedPrompt({
         content: prompt,
         timestamp: Date.now(),
         formData: currentFormData ? {
-          ...currentFormData,
-          // Don't store API keys in history
-          apiKey: "",
-          vapiKey: "",
+          model: currentFormData.model,
+          aiName: currentFormData.aiName,
+          companyName: currentFormData.companyName,
+          industry: currentFormData.industry,
+          targetAudience: currentFormData.targetAudience,
+          challenges: currentFormData.challenges,
+          product: currentFormData.product,
+          objective: currentFormData.objective,
+          objections: currentFormData.objections,
+          additionalInfo: currentFormData.additionalInfo,
         } : {
-          apiKey: "",
-          vapiKey: "",
           model: "gpt-4o-mini",
           aiName: "",
           companyName: "",

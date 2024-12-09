@@ -2,7 +2,7 @@
 
 import ReactMarkdown from "react-markdown"
 import { ChevronDown } from "lucide-react"
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import {
   Collapsible,
   CollapsibleContent,
@@ -10,20 +10,20 @@ import {
 } from "@/components/ui/collapsible"
 import { CopyButton, DeleteButton, RestoreButton, CallButton } from "./prompt-actions"
 import { Button } from "./ui/button"
-import { FormValues } from "./prompt-form"
+import { FormValues, ApiKeyValues } from "./prompt-form"
 
 interface PromptHistoryItem {
   id: string
   content: string
   timestamp: number
-  formData: FormValues
+  formData: Omit<FormValues, keyof ApiKeyValues>
 }
 
 interface PromptHistoryProps {
   history: PromptHistoryItem[]
   onDelete: (id: string) => void
   onRestore: (item: PromptHistoryItem) => void
-  currentFormData: FormValues | null
+  currentFormData: (FormValues & ApiKeyValues) | null
 }
 
 const ITEMS_PER_PAGE = 10
@@ -54,6 +54,22 @@ export function PromptHistory({ history, onDelete, onRestore, currentFormData }:
       time: date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   }
+
+  const handleRestore = useCallback((item: PromptHistoryItem) => {
+    // When restoring, preserve the current API keys
+    const currentApiKeys = {
+      apiKey: currentFormData?.apiKey || "",
+      vapiKey: currentFormData?.vapiKey || "",
+    }
+    
+    onRestore({
+      ...item,
+      formData: {
+        ...item.formData,
+        ...currentApiKeys
+      }
+    })
+  }, [currentFormData, onRestore])
 
   return (
     <div className="space-y-4">
@@ -110,7 +126,7 @@ export function PromptHistory({ history, onDelete, onRestore, currentFormData }:
                     />
                     <CopyButton text={item.content} />
                     <RestoreButton 
-                      onRestore={() => onRestore(item)} 
+                      onRestore={() => handleRestore(item)} 
                     />
                     <DeleteButton 
                       onDelete={() => onDelete(item.id)}
