@@ -304,7 +304,6 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
       const deletedData = localStorage.getItem(DELETED_DATA_KEY)
       if (deletedData) {
         const parsedData = JSON.parse(deletedData)
-        console.log('Restoring data:', parsedData)
         
         // Ensure we have all the required fields
         const restoredData = {
@@ -353,7 +352,6 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
         apiKey: "",
         vapiKey: ""
       }
-      console.log('Storing data before reset:', dataToStore)
       localStorage.setItem(DELETED_DATA_KEY, JSON.stringify(dataToStore))
       
       const apiKey = form.getValues("apiKey")

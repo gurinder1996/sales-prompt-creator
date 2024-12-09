@@ -137,12 +137,13 @@ export function GeneratedPrompt({
   }, [onRestoreFormData, onRestorePrompt, currentFormData])
 
   const handleDeleteItem = (id: string) => {
-    const itemToDelete = history.find(item => item.id === id);
-    const updatedHistory = history.filter(item => item.id !== id);
-    setHistory(updatedHistory);
-    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
+    // Update history
+    const updatedHistory = history.filter(item => item.id !== id)
+    setHistory(updatedHistory)
+    localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory))
 
     // If the deleted item matches the current prompt, clear it
+    const itemToDelete = history.find(item => item.id === id);
     if (itemToDelete && itemToDelete.content === prompt) {
       onClearPrompt();
       localStorage.removeItem(CURRENT_PROMPT_KEY);
