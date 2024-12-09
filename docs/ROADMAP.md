@@ -8,6 +8,11 @@
   - Ensure clean teardown of call resources when cancelled
   - Add proper error handling for cancellation states
   - Remove current workarounds for button disabled states
+- [ ] Add global end call button
+  - Implement persistent end call button that remains visible across all routes
+  - Position button in a consistent, easily accessible location (e.g., top navigation bar)
+  - Ensure button state correctly reflects current call status
+  - Add visual indicator for active call state
 
 ### UI/UX Enhancements
 - [ ] Add loading states and skeleton placeholders
