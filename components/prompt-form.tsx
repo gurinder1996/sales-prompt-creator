@@ -276,23 +276,23 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
         vapiKey: form.getValues("vapiKey")
       };
 
-      // Reset form with merged data
-      form.reset({
+      // Merge restored data with current API keys
+      const mergedData = {
         ...restoredFormData,
         apiKey: currentApiKeys.apiKey,
         vapiKey: currentApiKeys.vapiKey
-      });
+      };
 
-      // Save to localStorage without API keys
-      const { apiKey, vapiKey, ...dataToSave } = restoredFormData;
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+      // Reset form and save to localStorage
+      form.reset(mergedData);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
       
       // Clear undo state when restoring from history
       setCanUndo(false);
       localStorage.setItem(UNDO_STATE_KEY, "false");
       localStorage.removeItem(DELETED_DATA_KEY);
     }
-  }, [restoredFormData, form, mounted])
+  }, [restoredFormData, form, mounted]);
 
   const handleSubmit = (values: FormValues & ApiKeyValues) => {
     onSubmit(values)
