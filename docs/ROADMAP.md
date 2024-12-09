@@ -14,6 +14,14 @@
   - Ensure button state correctly reflects current call status
   - Add visual indicator for active call state
 
+### OpenAI Streaming Integration
+- [ ] Implement streaming support for OpenAI outputs
+  - Add streaming API support in OpenAI client implementation
+  - Modify generated prompt component to handle streaming updates
+  - Add loading indicators for streaming state
+  - Implement proper error handling for stream interruptions
+  - Ensure smooth UI updates during streaming
+
 ### UI/UX Enhancements
 - [ ] Add loading states and skeleton placeholders
   - Implement skeleton loading for prompt cards
