@@ -331,8 +331,8 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
         objective: currentFormData.objective,
         objections: currentFormData.objections,
         additionalInfo: currentFormData.additionalInfo,
-        apiKey: currentFormData.apiKey,
-        vapiKey: currentFormData.vapiKey
+        apiKey: "",
+        vapiKey: ""
       }
       console.log('Storing data before reset:', dataToStore)
       localStorage.setItem(DELETED_DATA_KEY, JSON.stringify(dataToStore))
