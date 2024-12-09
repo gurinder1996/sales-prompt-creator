@@ -1,5 +1,5 @@
 import OpenAI from "openai"
-import { type FormValues } from "@/components/prompt-form"
+import { type FormValues, type ApiKeyValues } from "@/components/prompt-form"
 
 const SYSTEM_PROMPT = `Use the user provided data to create a personalized version of the following prompt;
 
@@ -240,7 +240,7 @@ George: "I understand you may not be ready for a demo right now. Could I ask wha
 Person: "We're not interested right now."
 George: "I appreciate your directness. If your situation with missed calls changes, we're here to help. Thank you for your time today."`
 
-export async function generateSalesPrompt(formData: FormValues): Promise<string> {
+export async function generateSalesPrompt(formData: FormValues & ApiKeyValues): Promise<string> {
   const openai = new OpenAI({
     apiKey: formData.apiKey,
     dangerouslyAllowBrowser: true,
