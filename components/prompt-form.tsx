@@ -29,7 +29,13 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
-import { Lock, Unlock } from "lucide-react"
+import { Lock, Unlock, HelpCircle } from "lucide-react"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 
 const formSchema = z.object({
   model: z.string().min(1, "Model selection is required"),
@@ -407,10 +413,19 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
                   </Button>
                 </CollapsibleTrigger>
                 <div>
-                  <h3 className="text-sm font-medium">API Configuration</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Your API keys will be saved locally
-                  </p>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-medium">API Keys</span>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="h-4 w-4 text-muted-foreground/70 hover:text-muted-foreground" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs">Your API keys will be saved locally</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
               </div>
             </div>
@@ -443,41 +458,43 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
                   )}
                 />
               </div>
-              <div className="flex items-end gap-2 mt-4">
-                <FormField
-                  control={form.control}
-                  name="model"
-                  render={({ field }) => (
-                    <FormItem className="flex-1">
-                      <FormLabel>Model</FormLabel>
-                      <Select onValueChange={field.onChange} value={field.value}>
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a model" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {isLoadingModels ? (
-                            <SelectItem value="loading" disabled>
-                              Loading models...
-                            </SelectItem>
-                          ) : (
-                            models.map((model) => (
-                              <SelectItem key={model.id} value={model.id}>
-                                {model.id}
-                              </SelectItem>
-                            ))
-                          )}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
             </CollapsibleContent>
           </Collapsible>
+
           <Separator className="my-4" />
+
+          <div className="flex items-end gap-2">
+            <FormField
+              control={form.control}
+              name="model"
+              render={({ field }) => (
+                <FormItem className="flex-1">
+                  <FormLabel>Model</FormLabel>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a model" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {isLoadingModels ? (
+                        <SelectItem value="loading" disabled>
+                          Loading models...
+                        </SelectItem>
+                      ) : (
+                        models.map((model) => (
+                          <SelectItem key={model.id} value={model.id}>
+                            {model.id}
+                          </SelectItem>
+                        ))
+                      )}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
 
           <div className="grid grid-cols-2 gap-2">
             <FormField
