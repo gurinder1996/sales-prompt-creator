@@ -71,14 +71,15 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
   ])
   const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [canUndo, setCanUndo] = useState(false)
-  const [isApiOpen, setIsApiOpen] = useState(false)
+  const [isApiOpen, setIsApiOpen] = useState(true)
   const { toast } = useToast()
 
   // Load API section state from localStorage
   useEffect(() => {
     const savedApiSectionState = localStorage.getItem(API_SECTION_STATE_KEY)
-    if (savedApiSectionState !== null) {
-      setIsApiOpen(savedApiSectionState === "true")
+    // Only close the section if explicitly set to false in localStorage
+    if (savedApiSectionState === "false") {
+      setIsApiOpen(false)
     }
   }, [])
 
