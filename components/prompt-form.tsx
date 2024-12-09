@@ -49,8 +49,8 @@ const apiKeySchema = z.object({
   vapiKey: z.string().optional(),
 })
 
-export type FormValues = z.infer<typeof formSchema>
-export type ApiKeyValues = z.infer<typeof apiKeySchema>
+export type FormValues = z.infer<typeof formSchema>;
+export type ApiKeyValues = z.infer<typeof apiKeySchema>;
 
 interface PromptFormProps {
   onSubmit: (values: FormValues & ApiKeyValues) => void

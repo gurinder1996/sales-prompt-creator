@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { PromptForm } from "@/components/prompt-form"
-import { type FormValues } from "@/components/prompt-form"
+import { type FormValues, type ApiKeyValues } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
 import { GeneratedPrompt } from "@/components/generated-prompt"
 
@@ -12,7 +12,7 @@ const STORAGE_KEY = "sales-prompt-result"
 export function PromptContainer() {
   const [isLoading, setIsLoading] = useState(false)
   const [result, setResult] = useState<string | null>(null)
-  const [currentFormData, setCurrentFormData] = useState<FormValues | null>(null)
+  const [currentFormData, setCurrentFormData] = useState<(FormValues & ApiKeyValues) | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const [formHeight, setFormHeight] = useState<number>(0)
 
@@ -71,7 +71,7 @@ export function PromptContainer() {
     }
   }, [result])
 
-  const handleSubmit = async (values: FormValues) => {
+  const handleSubmit = async (values: FormValues & ApiKeyValues) => {
     if (!values.apiKey) {
       return false
     }
@@ -87,7 +87,7 @@ export function PromptContainer() {
     }
   }
 
-  const handleRestoreFormData = (formData: FormValues | null) => {
+  const handleRestoreFormData = (formData: FormValues & ApiKeyValues | null) => {
     if (formData) {
       setCurrentFormData(formData)
     }
