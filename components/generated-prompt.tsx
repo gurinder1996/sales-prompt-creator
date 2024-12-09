@@ -93,11 +93,15 @@ export function GeneratedPrompt({
         setHistory(updatedHistory);
         localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
       }
-      
-      // Switch to current tab when new prompt is generated
-      setActiveTab("current")
     }
   }, [prompt, isLoading, currentFormData, history])
+
+  // Handle tab switching only when new prompt is generated
+  useEffect(() => {
+    if (prompt && !isLoading) {
+      setActiveTab("current")
+    }
+  }, [prompt, isLoading])
 
   // Save history to localStorage whenever it changes
   useEffect(() => {
@@ -129,9 +133,16 @@ export function GeneratedPrompt({
   }, [onRestoreFormData, onRestorePrompt, currentFormData])
 
   const handleDeleteItem = (id: string) => {
+    const itemToDelete = history.find(item => item.id === id);
     const updatedHistory = history.filter(item => item.id !== id);
     setHistory(updatedHistory);
     localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(updatedHistory));
+
+    // If the deleted item matches the current prompt, clear it
+    if (itemToDelete && itemToDelete.content === prompt) {
+      onClearPrompt();
+      localStorage.removeItem(CURRENT_PROMPT_KEY);
+    }
   }
 
   return (
