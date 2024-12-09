@@ -72,10 +72,10 @@ const API_SECTION_STATE_KEY = "sales-prompt-form-api-section"
 
 export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFormDataLoad }: PromptFormProps) {
   const [mounted, setMounted] = useState(false)
-  const [models, setModels] = useState<Array<{ id: string }>>([
-    { id: "gpt-4o-mini" }
+  const [models] = useState([
+    { id: "gpt-4o-mini" },
+    { id: "gpt-4o" }
   ])
-  const [isLoadingModels, setIsLoadingModels] = useState(false)
   const [canUndo, setCanUndo] = useState(false)
   const [isApiOpen, setIsApiOpen] = useState(true)
   const { toast } = useToast()
@@ -147,49 +147,6 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
       onFormDataLoad(form.getValues())
     }
   }, [form, onFormDataLoad])
-
-  // Fetch available models only when API key is valid
-  const fetchModels = useCallback(async (apiKey: string) => {
-    if (!apiKey || !mounted || typeof window === 'undefined') return
-
-    setIsLoadingModels(true)
-    try {
-      const { OpenAI } = await import('openai')
-      const openai = new OpenAI({ 
-        apiKey,
-        dangerouslyAllowBrowser: true // Required for client-side only architecture
-      })
-      const modelList = await openai.models.list()
-      // Ensure our default models are always included
-      const defaultModels = ["gpt-4o-mini"]
-      const allModels = Array.from(modelList.data)
-      const filteredModels = allModels.filter(model => !defaultModels.includes(model.id))
-      setModels([
-        { id: "gpt-4o-mini" },
-        ...filteredModels
-      ])
-    } catch (error) {
-      console.error("Failed to fetch models:", error)
-      toast({
-        title: "Failed to load models",
-        description: "Using default models only. Please check your API key.",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoadingModels(false)
-    }
-  }, [mounted, toast])
-
-  // Watch for API key changes
-  const apiKey = form.watch("apiKey")
-  useEffect(() => {
-    if (mounted && apiKey?.length >= 30) {
-      const timer = setTimeout(() => {
-        fetchModels(apiKey)
-      }, 500) // Debounce API key changes
-      return () => clearTimeout(timer)
-    }
-  }, [apiKey, mounted, fetchModels])
 
   // Watch for API keys changes and notify parent
   useEffect(() => {
@@ -475,17 +432,11 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {isLoadingModels ? (
-                        <SelectItem value="loading" disabled>
-                          Loading models...
+                      {models.map((model) => (
+                        <SelectItem key={model.id} value={model.id}>
+                          {model.id}
                         </SelectItem>
-                      ) : (
-                        models.map((model) => (
-                          <SelectItem key={model.id} value={model.id}>
-                            {model.id}
-                          </SelectItem>
-                        ))
-                      )}
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />
