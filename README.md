@@ -11,6 +11,10 @@ A modern web application for generating AI sales representative prompts. Built w
 - 📱 Responsive design
 - ⚡ Real-time prompt generation
 
+## Demo
+
+[![Talk to Your Sales Prompts! Vapi-Powered AI Conversations in Next.js via #Windsurf](https://img.youtube.com/vi/Q1sEkoNmpkk/maxresdefault.jpg)](https://www.youtube.com/watch?v=Q1sEkoNmpkk)
+
 ## Prerequisites
 
 - Node.js 18.x or later
