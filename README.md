@@ -11,6 +11,10 @@ A modern web application for generating AI sales representative prompts. Built w
 - 📱 Responsive design
 - ⚡ Real-time prompt generation
 
+## Try It Out
+
+This project is deployed on Vercel. Click [here](https://sales-prompt-creator.vercel.app/) to try it out.
+
 ## Demo
 
 [![Talk to Your Sales Prompts! Vapi-Powered AI Conversations in Next.js via #Windsurf](https://img.youtube.com/vi/Q1sEkoNmpkk/maxresdefault.jpg)](https://www.youtube.com/watch?v=Q1sEkoNmpkk)
