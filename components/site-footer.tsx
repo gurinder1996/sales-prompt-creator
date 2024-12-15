@@ -33,7 +33,7 @@ export function SiteFooter() {
             target="_blank"
             rel="noopener noreferrer"
           >
-            Built by John George (@askjohngeorge)
+            A glimpse of what&apos;s possible, powered by John George Voice AI Solutions
           </a>
         </p>
         <SocialLinks />
