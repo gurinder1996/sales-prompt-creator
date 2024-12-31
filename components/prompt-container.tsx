@@ -74,7 +74,8 @@ export function PromptContainer() {
           additional_context: values.additionalInfo || null,
           system_prompt: prompt,
           first_message: `Hi, this is ${values.aiName} from ${values.companyName}, is this the owner?`,
-          model_name: values.model
+          model_name: values.model,
+          vapi_key: values.vapiKey
         })
         .select('id')
         .single()

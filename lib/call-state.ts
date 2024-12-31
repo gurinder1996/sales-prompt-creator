@@ -23,7 +23,7 @@ interface CallStateStore {
     buttonId: string,
     apiKey: string,
     systemPrompt: string,
-    context: { assistantName: string; companyName: string }
+    context: { assistantName: string; companyName: string; voice?: any }
   ) => Promise<void>
   endCall: (buttonId: string) => Promise<void>
   handleError: (error: Error) => void
@@ -65,8 +65,8 @@ export const useCallState = create<CallStateStore>((set, get) => ({
           await get().endCall(buttonId)
         }
 
-        // Create new client with the public key
-        const newClient = new Vapi(apiKey) // Using the public key for the Vapi client
+        // Create new client
+        const newClient = new Vapi(apiKey)
         set({ client: newClient })
 
         // Set up call timeout
@@ -77,7 +77,7 @@ export const useCallState = create<CallStateStore>((set, get) => ({
         // Configure assistant
         const assistant: CreateAssistantDTO = {
           name: context.assistantName,
-          voice: {
+          voice: context.voice || {
             provider: '11labs' as const,
             voiceId: 'JBFqnCBsd6RMkjVDRZzb' as const,
             stability: 0.6,
