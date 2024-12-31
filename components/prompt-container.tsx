@@ -6,6 +6,7 @@ import { PromptForm } from "@/components/prompt-form"
 import { type FormValues, type ApiKeyValues } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
 import { GeneratedPrompt } from "@/components/generated-prompt"
+import { supabase } from "@/lib/supabase"
 
 const STORAGE_KEY = "sales-prompt-result"
 
@@ -80,6 +81,34 @@ export function PromptContainer() {
     try {
       const prompt = await generateSalesPrompt(values)
       setResult(prompt)
+
+      // Save to Supabase
+      const { data, error } = await supabase
+        .from('voice_agent_configs')
+        .insert({
+          ai_representative_name: values.aiName,
+          company_name: values.companyName,
+          industry: values.industry,
+          target_audience: values.targetAudience,
+          product_service_description: values.product,
+          challenges_solved: values.challenges,
+          call_objective: values.objective,
+          common_objections: values.objections,
+          additional_context: values.additionalInfo || null,
+          system_prompt: prompt,
+          first_message: `Hi, this is ${values.aiName} from ${values.companyName}, is this the owner?`,
+          model_name: values.model
+        })
+        .select('id')
+        .single()
+
+      if (error) {
+        console.error('Error saving to Supabase:', error)
+        throw error
+      }
+
+      console.log('Saved to Supabase with ID:', data.id)
+      
     } catch (error) {
       console.error(error)
     } finally {
