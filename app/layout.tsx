@@ -17,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "AI Sales Prompt Creator",
-  description: "Generate personalized AI sales representative prompts",
+  title: "Voice AI Agent",
+  description: "",
 };
 
 export default function RootLayout({

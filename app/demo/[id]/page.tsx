@@ -138,6 +138,11 @@ export default function DemoPage() {
     }
   }
 
+  const capitalizeFirstLetter = (str: string) => {
+    if (!str) return str;
+    return str.charAt(0).toUpperCase() + str.slice(1);
+  };
+
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
@@ -160,57 +165,56 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-      <Card className="w-full max-w-lg p-6 space-y-6">
-        <div className="text-center space-y-2">
-          <h1 className="text-2xl font-bold">
-            {settings?.ai_representative_name} from {settings?.company_name}
-          </h1>
-          <p className="text-muted-foreground">
-            Click the button below to start a conversation
-          </p>
+    <Card className="w-full max-w-3xl mx-4 p-12 space-y-10">
+      <div className="text-center space-y-6">
+        <h1 className="text-4xl font-bold tracking-tight">
+          Welcome! I'm {capitalizeFirstLetter(settings?.ai_representative_name)}, <br/>
+          your AI Assistant from {settings?.company_name}
+        </h1>
+        <p className="text-xl text-muted-foreground">
+          Click the button below to start a conversation
+        </p>
+      </div>
+
+      <div className="space-y-8">
+        <Select
+          value={selectedVoiceId}
+          onValueChange={setSelectedVoiceId}
+        >
+          <SelectTrigger className="w-full h-14 text-lg">
+            <SelectValue placeholder="Select a voice" />
+          </SelectTrigger>
+          <SelectContent>
+            {voices.map((voice) => (
+              <SelectItem key={voice.id} value={voice.id}>
+                {voice.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        <Button
+          onClick={handleCallButton}
+          disabled={!settings || loading}
+          className="w-full h-14 text-lg"
+          variant={isActiveCall ? "destructive" : "default"}
+        >
+          {isActiveCall ? (
+            <>End Call</>
+          ) : (
+            <div className="flex items-center justify-center gap-2">
+              <Phone className="h-6 w-6" />
+              <span>Start Call</span>
+            </div>
+          )}
+        </Button>
+      </div>
+
+      {error && (
+        <div className="text-sm text-red-500 text-center">
+          {error}
         </div>
-
-        <div className="space-y-4">
-          <Select
-            value={selectedVoiceId}
-            onValueChange={setSelectedVoiceId}
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a voice" />
-            </SelectTrigger>
-            <SelectContent>
-              {voices.map((voice) => (
-                <SelectItem key={voice.id} value={voice.id}>
-                  {voice.name}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          <Button
-            onClick={handleCallButton}
-            disabled={!settings || loading}
-            className="w-full"
-            variant={isActiveCall ? "destructive" : "default"}
-          >
-            {isActiveCall ? (
-              <>End Call</>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Phone className="h-4 w-4" />
-                <span>Start Call</span>
-              </div>
-            )}
-          </Button>
-        </div>
-
-        {error && (
-          <div className="text-sm text-red-500 text-center">
-            {error}
-          </div>
-        )}
-      </Card>
-    </div>
+      )}
+    </Card>
   )
 }
