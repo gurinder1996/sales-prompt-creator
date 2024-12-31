@@ -77,13 +77,13 @@ export const useCallState = create<CallStateStore>((set, get) => ({
         // Configure assistant
         const assistant: CreateAssistantDTO = {
           name: context.assistantName,
-          voice: context.voice || {
+          voice: {
             provider: '11labs' as const,
-            voiceId: 'JBFqnCBsd6RMkjVDRZzb' as const,
-            stability: 0.6,
-            similarityBoost: 0.75,
-            fillerInjectionEnabled: false,
-            optimizeStreamingLatency: 4,
+            voiceId: context.voice?.voiceId || 'JBFqnCBsd6RMkjVDRZzb',
+            stability: context.voice?.stability || 0.6,
+            similarityBoost: context.voice?.similarityBoost || 0.75,
+            fillerInjectionEnabled: context.voice?.fillerInjectionEnabled || false,
+            optimizeStreamingLatency: context.voice?.optimizeStreamingLatency || 4,
           },
           model: {
             provider: 'openai' as const,

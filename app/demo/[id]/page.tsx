@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useCallState } from "@/lib/call-state"
 import { Card } from "@/components/ui/card"
 import { useParams } from "next/navigation"
+import { voices } from "@/lib/voices"
 
 interface DemoSettings {
   id: string
@@ -43,16 +44,11 @@ export default function DemoPage() {
   const params = useParams()
   const demoId = params?.id as string
   const [settings, setSettings] = useState<DemoSettings | null>(null)
-  const [selectedVoice, setSelectedVoice] = useState<string>("JBFqnCBsd6RMkjVDRZzb") // Default 11labs voice
-  const [voices] = useState<Voice[]>([
-    { id: "JBFqnCBsd6RMkjVDRZzb", name: "Rachel", provider: "11labs" },
-    // Add more voices as needed
-  ])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-  
+  const [selectedVoiceId, setSelectedVoiceId] = useState(voices[0].id)
   const { initiateCall, endCall, state: callState } = useCallState()
-  const isActiveCall = callState === "active" || callState === "connecting"
+  const isActiveCall = callState === 'active'
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchSettings = async () => {
@@ -86,7 +82,7 @@ export default function DemoPage() {
             ...data,
             vapi_key: "a4282df5-5a2d-493c-b6c3-a8f7837b9bbc", // Hardcoded VAPI key for all demos
             voice_provider: '11labs',
-            voice_id: 'JBFqnCBsd6RMkjVDRZzb',
+            voice_id: selectedVoiceId, // Use the selected voice ID
             voice_stability: 0.6,
             voice_similarity_boost: 0.75,
             voice_filler_injection_enabled: false,
@@ -107,7 +103,7 @@ export default function DemoPage() {
     }
 
     fetchSettings()
-  }, [demoId])
+  }, [demoId, selectedVoiceId])
 
   const handleCallButton = async () => {
     if (!settings || !demoId) return
@@ -125,7 +121,14 @@ export default function DemoPage() {
           settings.system_prompt,
           {
             assistantName: settings.ai_representative_name,
-            companyName: settings.company_name
+            companyName: settings.company_name,
+            voice: {
+              voiceId: selectedVoiceId,
+              stability: 0.6,
+              similarityBoost: 0.75,
+              fillerInjectionEnabled: false,
+              optimizeStreamingLatency: 4
+            }
           }
         )
       } catch (err) {
@@ -157,21 +160,24 @@ export default function DemoPage() {
   }
 
   return (
-    <div className="flex h-screen flex-col items-center justify-center p-4">
-      <Card className="w-full max-w-xl p-8">
-        <div className="mb-8 text-center">
-          <h1 className="mb-2 text-2xl font-bold">
-            {settings.ai_representative_name} from {settings.company_name}
+    <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
+      <Card className="w-full max-w-lg p-6 space-y-6">
+        <div className="text-center space-y-2">
+          <h1 className="text-2xl font-bold">
+            {settings?.ai_representative_name} from {settings?.company_name}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-muted-foreground">
             Click the button below to start a conversation
           </p>
         </div>
 
-        <div className="flex items-center justify-center gap-4">
-          <Select value={selectedVoice} onValueChange={setSelectedVoice}>
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select voice" />
+        <div className="space-y-4">
+          <Select
+            value={selectedVoiceId}
+            onValueChange={setSelectedVoiceId}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Select a voice" />
             </SelectTrigger>
             <SelectContent>
               {voices.map((voice) => (
@@ -183,15 +189,27 @@ export default function DemoPage() {
           </Select>
 
           <Button
-            size="lg"
             onClick={handleCallButton}
-            className={`${
-              isActiveCall ? "bg-red-500 hover:bg-red-600" : ""
-            } h-16 w-16 rounded-full p-4`}
+            disabled={!settings || loading}
+            className="w-full"
+            variant={isActiveCall ? "destructive" : "default"}
           >
-            <Phone className="h-8 w-8" />
+            {isActiveCall ? (
+              <>End Call</>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Phone className="h-4 w-4" />
+                <span>Start Call</span>
+              </div>
+            )}
           </Button>
         </div>
+
+        {error && (
+          <div className="text-sm text-red-500 text-center">
+            {error}
+          </div>
+        )}
       </Card>
     </div>
   )
