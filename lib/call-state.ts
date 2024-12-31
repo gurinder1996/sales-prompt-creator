@@ -65,8 +65,8 @@ export const useCallState = create<CallStateStore>((set, get) => ({
           await get().endCall(buttonId)
         }
 
-        // Create new client
-        const newClient = new Vapi(apiKey)
+        // Create new client with the public key
+        const newClient = new Vapi(apiKey) // Using the public key for the Vapi client
         set({ client: newClient })
 
         // Set up call timeout

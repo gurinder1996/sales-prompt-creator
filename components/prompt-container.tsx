@@ -5,31 +5,17 @@ import { useState, useEffect, useRef } from "react"
 import { PromptForm } from "@/components/prompt-form"
 import { type FormValues, type ApiKeyValues } from "@/components/prompt-form"
 import { generateSalesPrompt } from "@/lib/openai"
-import { GeneratedPrompt } from "@/components/generated-prompt"
+import { DemoLink } from "@/components/demo-link"
 import { supabase } from "@/lib/supabase"
 
 const STORAGE_KEY = "sales-prompt-result"
 
 export function PromptContainer() {
   const [isLoading, setIsLoading] = useState(false)
-  const [result, setResult] = useState<string | null>(null)
+  const [demoId, setDemoId] = useState<string | null>(null)
   const [currentFormData, setCurrentFormData] = useState<(FormValues & ApiKeyValues) | null>(null)
   const formRef = useRef<HTMLDivElement>(null)
   const [formHeight, setFormHeight] = useState<number>(0)
-
-  // Load saved result from localStorage
-  useEffect(() => {
-    // Only clear prompt-related data
-    localStorage.removeItem(STORAGE_KEY);
-    localStorage.removeItem("sales-prompt-form-deleted");
-    localStorage.removeItem("sales-prompt-form-can-undo");
-    
-    // Then load fresh result if exists
-    const savedResult = localStorage.getItem(STORAGE_KEY)
-    if (savedResult) {
-      setResult(savedResult)
-    }
-  }, [])
 
   useEffect(() => {
     const updateHeight = () => {
@@ -64,23 +50,14 @@ export function PromptContainer() {
     }
   }, [])
 
-  useEffect(() => {
-    if (result) {
-      localStorage.setItem(STORAGE_KEY, result)
-    } else {
-      localStorage.removeItem(STORAGE_KEY)
-    }
-  }, [result])
-
   const handleSubmit = async (values: FormValues & ApiKeyValues) => {
-    if (!values.apiKey) {
+    if (!values.vapiKey) {
       return false
     }
     setIsLoading(true)
     setCurrentFormData(values)
     try {
       const prompt = await generateSalesPrompt(values)
-      setResult(prompt)
 
       // Save to Supabase
       const { data, error } = await supabase
@@ -107,6 +84,7 @@ export function PromptContainer() {
         throw error
       }
 
+      setDemoId(data.id)
       console.log('Saved to Supabase with ID:', data.id)
       
     } catch (error) {
@@ -116,39 +94,20 @@ export function PromptContainer() {
     }
   }
 
-  const handleRestoreFormData = (formData: FormValues & ApiKeyValues | null) => {
-    if (formData) {
-      setCurrentFormData(formData)
-    }
-  }
-
-  const handleRestorePrompt = (prompt: string) => {
-    setResult(prompt)
-  }
-
-  const handleClearPrompt = () => {
-    setResult(null);
-  }
-
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-      <div ref={formRef}>
-        <PromptForm 
-          onSubmit={handleSubmit} 
-          isLoading={isLoading} 
+    <div className="relative flex w-full gap-6">
+      <div ref={formRef} className="w-1/2">
+        <PromptForm
+          onSubmit={handleSubmit}
+          isLoading={isLoading}
           restoredFormData={currentFormData}
-          onFormDataLoad={setCurrentFormData}
         />
       </div>
-      <div className="mt-0 lg:mt-0 lg:pl-0 flex flex-col" style={{ height: formHeight ? `${formHeight}px` : 'auto' }}>
-        <GeneratedPrompt 
-          prompt={result} 
+      <div className="w-1/2">
+        <DemoLink
+          demoId={demoId}
           isLoading={isLoading}
           currentFormData={currentFormData}
-          onRestoreFormData={handleRestoreFormData}
-          onRestorePrompt={handleRestorePrompt}
-          onClearPrompt={handleClearPrompt}
-          containerHeight={formHeight}
         />
       </div>
     </div>

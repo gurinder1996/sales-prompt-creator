@@ -52,7 +52,7 @@ const formSchema = z.object({
 
 const apiKeySchema = z.object({
   apiKey: z.string().min(1, "OpenAI API key is required"),
-  vapiKey: z.string().optional(),
+  vapiKey: z.string().min(1, "VAPI API key is required"),
 })
 
 export type FormValues = z.infer<typeof formSchema>;
@@ -610,10 +610,11 @@ export function PromptForm({ onSubmit, isLoading = false, restoredFormData, onFo
             size="lg"
             onClick={() => {
               const apiKey = form.getValues("apiKey")
-              if (!apiKey) {
+              const vapiKey = form.getValues("vapiKey")
+              if (!apiKey || !vapiKey) {
                 toast({
-                  title: "OpenAI API Key Required",
-                  description: "Please check your OpenAI API key in the API Configuration section",
+                  title: "API Keys Required",
+                  description: "Please check your OpenAI and VAPI API keys in the API Configuration section",
                   variant: "destructive",
                 })
                 setIsApiOpen(true)
